@@ -5,17 +5,16 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
-
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+
 public class Util {
 
-
-	public ArrayList<DadosTorneioERede> listaTorneioERedeAPartirArquivo(File arquivo){
+	public ArrayList<DadosTorneioERede> instanciaTorneioERedeAPartirDeArquivoExcelLocal(File arquivo){
+		
 		ArrayList<DadosTorneioERede> dados = new ArrayList<>();
 
 	        try (FileInputStream file = new FileInputStream(arquivo)) {
@@ -50,6 +49,9 @@ public class Util {
 	                DadosTorneioERede dadosTorneioERede = new DadosTorneioERede();
 	                dadosTorneioERede.setTorneio(torneio);
 	                dadosTorneioERede.setRede(rede);
+	                
+	                
+	                System.out.println(dadosTorneioERede);
 
 	                // Adiciona o objeto à lista de dados
 	                dados.add(dadosTorneioERede);

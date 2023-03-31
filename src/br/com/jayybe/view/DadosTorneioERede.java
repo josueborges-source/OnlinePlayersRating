@@ -1,9 +1,22 @@
 package br.com.jayybe.view;
 
-public class DadosTorneioERede {
+import java.util.ArrayList;
 
+public class DadosTorneioERede {
+	
 	private Long torneio;
 	private String rede;
+	
+	private ArrayList<EntradaPremioRecompensa> listaDePremiosDaPagina = new ArrayList<EntradaPremioRecompensa>();	
+	
+	
+	public ArrayList<EntradaPremioRecompensa> getListaDePremiosDaPagina() {
+		return listaDePremiosDaPagina;
+	}
+
+	public void adicionaEntradaPremioRecompensa(EntradaPremioRecompensa entradaPremioRecompensa) {
+		listaDePremiosDaPagina.add(entradaPremioRecompensa);
+	}
 
 	public Long getTorneio() {
 		return torneio;
