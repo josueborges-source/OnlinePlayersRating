@@ -11,9 +11,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
@@ -24,47 +22,42 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import br.com.jayybe.model.DadosTorneioERede;
 import br.com.jayybe.model.EntradaPremioRecompensa;
+import br.com.jayybe.view.TelaPrincipal;
 
 public class Util {
-		
-	/*
-	static Color[] cores = {Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.ORANGE};
-	static int contadorLinhas = 0;
-	*/
 	
-	private static final Color[] cores = { Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.ORANGE };
-	private static int contadorLinhas = 0;
-	
-	public static void imprimirEntradaPremioERecompensaCasoConfigurado(EntradaPremioRecompensa entradaPremioRecompensa) 
-	{		
-		if(Configuracoes.imprimirPremioERecompensa == true) {
-		System.out.println("Prêmio: "+entradaPremioRecompensa.getPremio());
-		System.out.println("Recompensa: "+entradaPremioRecompensa.getRecompensa());		
-		}
-	}	
-	
-	
-	private static DefaultStyledDocument doc = new DefaultStyledDocument();
 
-	public static void InserirValorEmJTextPaneComMarcacaoDeTempo(JTextPane textPane, String texto) {
-		InserirValorEmJTextPaneComMarcacaoDeTempo(textPane, texto);
+	private static int contadorLinhas = 0;
+	private static JTextPane textPaneLogDoSharkscope;
+	
+	static {
+		textPaneLogDoSharkscope = TelaPrincipal.textPane;
 	}
 	
-	public static void InserirValorEmJTextPaneComMarcacaoDeTempo(JTextPane textPane, String texto, Color cor) {
+	private static Color[] cores = new Color[] { Color.BLUE, Color.RED, Color.GREEN, Color.ORANGE, Color.MAGENTA, Color.CYAN };
+
+	public static void imprimirEntradaPremioERecompensaCasoConfigurado(
+			EntradaPremioRecompensa entradaPremioRecompensa) {
+		if (Configuracoes.imprimirPremioERecompensa == true) {
+			System.out.println("Prêmio: " + entradaPremioRecompensa.getPremio());
+			System.out.println("Recompensa: " + entradaPremioRecompensa.getRecompensa());
+		}
+	}
+
+
+	private Color obterCorLinha(int linha) {
+		return cores[linha % cores.length];
+	}
+
+	public static void InserirValorEmJTextPaneComMarcacaoDeTempo(String texto) {
 	    SwingUtilities.invokeLater(new Runnable() {
-	        public void run() {   
+	        public void run() {
 	            // Obtém o modelo do documento do JTextPane
-	            StyledDocument doc = textPane.getStyledDocument();
+	            StyledDocument doc = textPaneLogDoSharkscope.getStyledDocument();
 
 	            // Define o estilo do texto para a linha atual
 	            SimpleAttributeSet estilo = new SimpleAttributeSet();
-	            
-	            if(cor != null) {
 	            StyleConstants.setForeground(estilo, cores[contadorLinhas % cores.length]);
-	            }
-	            else {
-	            	StyleConstants.setForeground(estilo, cor);
-	            }
 
 	            // Adiciona o texto com o estilo configurado
 	            try {
@@ -76,83 +69,86 @@ public class Util {
 
 	            contadorLinhas++;
 
-	            // adicione um atraso de 50 milissegundos
-	            try {
-	                Thread.sleep(50);
-	            } catch (InterruptedException e) {
-	                e.printStackTrace();
-	            }
-
-	            textPane.revalidate();
-	            textPane.repaint();
+	            // Executa o atraso em uma nova thread
+	            new Thread(new Runnable() {
+	                public void run() {
+	                    try {
+	                        Thread.sleep(50);
+	                    } catch (InterruptedException e) {
+	                        e.printStackTrace();
+	                    }
+	                    // Atualiza o JTextPane
+	                    SwingUtilities.invokeLater(new Runnable() {
+	                        public void run() {
+	                            textPaneLogDoSharkscope.revalidate();
+	                            textPaneLogDoSharkscope.repaint();
+	                        }
+	                    });
+	                }
+	            }).start();
 	        }
 	    });
 	}
-	
 
-	public ArrayList<DadosTorneioERede> instanciarTorneioERedeAPartirDeArquivoExcelLocal(File arquivo){
-		
+
+	public ArrayList<DadosTorneioERede> instanciarTorneioERedeAPartirDeArquivoExcelLocal(File arquivo) {
+
 		ArrayList<DadosTorneioERede> dados = new ArrayList<>();
-		
-	        try (FileInputStream file = new FileInputStream(arquivo)) {
-	            // Abre o arquivo Excel
-	            XSSFWorkbook workbook = new XSSFWorkbook(file);
 
-	            // Seleciona a primeira planilha
-	            Iterator<Row> rowIterator = workbook.getSheetAt(0).iterator();
+		try (FileInputStream file = new FileInputStream(arquivo)) {
+			// Abre o arquivo Excel
+			XSSFWorkbook workbook = new XSSFWorkbook(file);
 
-	            // Itera sobre as linhas da planilha a partir da linha 2
-	            while (rowIterator.hasNext()) {
-	                Row row = rowIterator.next();
-	                
+			// Seleciona a primeira planilha
+			Iterator<Row> rowIterator = workbook.getSheetAt(0).iterator();
 
-	                // Pula a primeira linha (cabeçalho)
-	                if (row.getRowNum() < 1) {
-	                    continue;
-	                }
+			// Itera sobre as linhas da planilha a partir da linha 2
+			while (rowIterator.hasNext()) {
+				Row row = rowIterator.next();
 
-	                // Verifica se as colunas A e B estão vazias
-	                Cell cellA = row.getCell(0);
-	                Cell cellB = row.getCell(1);
-	                
-	                System.out.println("Row: "+row.getRowNum());
-	                
-	                System.out.println("Import Célula A: " + cellA);
-	                System.out.println("Import Célula B: " + cellB);
-	                
-	                
-	                if (cellA == null || cellA.getCellType() == CellType.BLANK
-	                        || cellB == null || cellB.getCellType() == CellType.BLANK) {
-	                    break;
-	                }
+				// Pula a primeira linha (cabeçalho)
+				if (row.getRowNum() < 1) {
+					continue;
+				}
 
-	                // Captura os valores das colunas A e B
-	                Long torneio = (long) row.getCell(0).getNumericCellValue();
-	                String rede = row.getCell(1).getStringCellValue();
+				// Verifica se as colunas A e B estão vazias
+				Cell cellA = row.getCell(0);
+				Cell cellB = row.getCell(1);
 
-	                // Cria um objeto DadosTorneioERede e atribui os valores capturados
-	                DadosTorneioERede dadosTorneioERede = new DadosTorneioERede();
-	                dadosTorneioERede.setTorneio(torneio);
-	                dadosTorneioERede.setRede(rede);
-	                
+				System.out.println("Import Célula A: " + cellA);
+				System.out.println("Import Célula B: " + cellB);
 
-	                // Adiciona o objeto à lista de dados
-	                dados.add(dadosTorneioERede);
-	            }
+				if (cellA == null || cellA.getCellType() == CellType.BLANK || cellB == null
+						|| cellB.getCellType() == CellType.BLANK) {
+					break;
+				}
 
-	            // Fecha o arquivo Excel
-	            workbook.close();
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	        }
-	        return dados;	    
+				// Captura os valores das colunas A e B
+				Long torneio = (long) row.getCell(0).getNumericCellValue();
+				String rede = row.getCell(1).getStringCellValue();
+
+				// Cria um objeto DadosTorneioERede e atribui os valores capturados
+				DadosTorneioERede dadosTorneioERede = new DadosTorneioERede();
+				dadosTorneioERede.setTorneio(torneio);
+				dadosTorneioERede.setRede(rede);
+
+				// Adiciona o objeto à lista de dados
+				dados.add(dadosTorneioERede);
+			}
+
+			// Fecha o arquivo Excel
+			workbook.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return dados;
 	}
 
 	public static void imprimirDadosTorneioERede(ArrayList<DadosTorneioERede> dadosTorneioERede) {
-		
-		for(DadosTorneioERede dadoTorneioERede : dadosTorneioERede) {
-			System.out.println("dadosTorneioERede: "+dadoTorneioERede);
+
+		for (DadosTorneioERede dadoTorneioERede : dadosTorneioERede) {
+			System.out.println("dadosTorneioERede: " + dadoTorneioERede);
 		}
-		
+
 	}
 }

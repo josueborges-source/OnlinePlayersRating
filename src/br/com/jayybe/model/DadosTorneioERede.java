@@ -1,7 +1,6 @@
 package br.com.jayybe.model;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 public class DadosTorneioERede {
 	
@@ -10,14 +9,6 @@ public class DadosTorneioERede {
 	
 	private ArrayList<EntradaPremioRecompensa> listaDePremiosDaPagina = new ArrayList<EntradaPremioRecompensa>();	
 	
-	public Long getTotalPremioSemRecomepensaDoTorneio() {
-		Long totalPremioSemRecompensa = new Long("0");
-		
-		for (int i=0; i < listaDePremiosDaPagina.size(); i++ ) {
-			totalPremioSemRecompensa = Long.sum(totalPremioSemRecompensa.longValue(), listaDePremiosDaPagina.get(i).getPremioSemRecompensa());	
-		}	
-		return totalPremioSemRecompensa;		
-	}
 	
 	public ArrayList<EntradaPremioRecompensa> getListaDePremiosDaPagina() {
 		return listaDePremiosDaPagina;

@@ -1,12 +1,18 @@
 package br.com.jayybe.controller;
 
-import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.swing.JFrame;
+import javax.swing.JTextArea;
+
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -43,7 +49,7 @@ public class ControleArquivoExcel {
 			System.out.println("Quantidade Dados E Torneio e Rede no Arquivo: " + quantidadedadosTorneioERede);
 
 			for (DadosTorneioERede dadoTorneioERede : dadosTorneioERede) {
-				DadosTorneioERede dadoTorneioERedeResposta = inserirDadosDePremioERecompensaEmObjetoDadosTorneioERede(
+				DadosTorneioERede dadoTorneioERedeResposta = InserirDadosDePremioERecompensaEmObjetoDadosTorneioERede(
 						dadoTorneioERede);
 				dadosTorneioERedeDeRetorno.add(dadoTorneioERedeResposta);
 			}
@@ -58,7 +64,7 @@ public class ControleArquivoExcel {
 		return urlDaPagina;
 	}
 
-	private DadosTorneioERede inserirDadosDePremioERecompensaEmObjetoDadosTorneioERede(
+	private DadosTorneioERede InserirDadosDePremioERecompensaEmObjetoDadosTorneioERede(
 			DadosTorneioERede dadoTorneioERede) {
 		
 		//Configura Chrome Driver
@@ -68,13 +74,11 @@ public class ControleArquivoExcel {
 		String url = retornarURLDaPaginaAPartirDeObjetoDadosTorneioERede(dadoTorneioERede);
 		
 		//Insere Página Selecionada em TextArea
-		Util.InserirValorEmJTextPaneComMarcacaoDeTempo(TelaPrincipal.textPane, "Página Selecionada a partir da lista: " + url);	
-		
+		Util.InserirValorEmJTextPaneComMarcacaoDeTempo("Página Selecionada a partir da lista: " + url);			
 
-		//TelaPrincipal.textPane.setLineWrap(true);
-		Util.InserirValorEmJTextPaneComMarcacaoDeTempo(TelaPrincipal.textPane, url);		
+		Util.InserirValorEmJTextPaneComMarcacaoDeTempo(url);		
 		
-		Util.InserirValorEmJTextPaneComMarcacaoDeTempo(TelaPrincipal.textPane, "Abrindo Browser na URL: " + url);
+		Util.InserirValorEmJTextPaneComMarcacaoDeTempo("Abrindo Browser na URL: " + url);
 				
 		// Configura o caminho do driver do Chrome
 		
@@ -86,7 +90,7 @@ public class ControleArquivoExcel {
 		driver.get(url);
 
 		try {								
-			Util.InserirValorEmJTextPaneComMarcacaoDeTempo(TelaPrincipal.textPane, "Aguardando " + Configuracoes.tempoDeCarregamentoDaPagina + " segundos para carregamento da página");
+			Util.InserirValorEmJTextPaneComMarcacaoDeTempo("Aguardando " + Configuracoes.tempoDeCarregamentoDaPagina + " segundos para carregamento da página");
 			
 			Thread.sleep(Configuracoes.tempoDeCarregamentoDaPagina);
 		} catch (InterruptedException e) {
@@ -119,7 +123,55 @@ public class ControleArquivoExcel {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		
+		
+		//// ID
+		List<WebElement> linhasTabela = driver.findElements(By.cssSelector("[id^='jqg']"));
+		System.out.println("linhasTabela: " + linhasTabela.size());
 
+		for (WebElement webElement : linhasTabela) {
+		    WebElement tdNome = webElement.findElement(By.xpath(".//td[4]//a[@class='playerlink']"));
+		    System.out.println("Elemento encontrado: " + tdNome);
+		    String nomeJogador = tdNome.getText();
+		    System.out.println("Nome do jogador: " + nomeJogador);
+		}
+		
+		///Refatorado		
+		/*
+		List<WebElement> linhasTabela = driver.findElements(By.cssSelector("[id^='jqg']"));
+
+		for (WebElement linha : linhasTabela) {
+		    // buscar o texto da quarta TD, que contém o nome do jogador
+		    WebElement tdNome = linha.findElement(By.xpath(".//td[4]"));
+		    String nomeJogador = tdNome.getText();
+
+		    // buscar o texto do quinto TD, que contém o valor do prêmio e da recompensa
+		    WebElement tdPremioRecompensa = linha.findElement(By.xpath(".//td[5]"));
+		    String textoPremioRecompensa = tdPremioRecompensa.getText();
+
+		    EntradaPremioRecompensa entradaPremioRecompensa = new EntradaPremioRecompensa();
+		    entradaPremioRecompensa.setJogador(nomeJogador);
+
+		    // extrair o valor do prêmio e da recompensa do texto usando as mesmas regras que você já estava usando
+		    if (textoPremioRecompensa.contains("(Recompensas:")) {
+		        String premio = textoPremioRecompensa.substring(1, textoPremioRecompensa.indexOf("(Recompensas:"))
+		                .replace(",", "").trim();
+		        String recompensa = textoPremioRecompensa.substring(textoPremioRecompensa.indexOf("(Recompensas:") + "(Recompensas:".length() + 2,
+		                textoPremioRecompensa.length() - 1).replace(",", "").trim();
+
+		        entradaPremioRecompensa.setPremio(Integer.parseInt(premio));
+		        entradaPremioRecompensa.setRecompensa(Integer.parseInt(recompensa));
+		    } else if (textoPremioRecompensa.length() > 0) {
+		        String premio = textoPremioRecompensa.substring(1).replace(",", "").trim();
+		        entradaPremioRecompensa.setPremio(Integer.parseInt(premio));
+		    }
+
+		    Util.imprimirEntradaPremioERecompensaCasoConfigurado(entradaPremioRecompensa);
+
+		    dadoTorneioERede.adicionaEntradaPremioRecompensa(entradaPremioRecompensa);
+		}
+		*/
+		/*
 		List<WebElement> elementos = driver.findElements(By.xpath(
 				"//*[@title[contains(., '$') and contains(translate(substring-after(., '$'), '0123456789', '0000000000'), '.')]]"));
 
@@ -175,14 +227,11 @@ public class ControleArquivoExcel {
 				}
 
 				Util.imprimirEntradaPremioERecompensaCasoConfigurado(entradaPremioRecompensa);
-
 			}
 
 			dadoTorneioERede.adicionaEntradaPremioRecompensa(entradaPremioRecompensa);
-			
-			// Util.InserirValorEmJTextPaneComMarcacaoDeTempo(TelaPrincipal.textPane, "Prêmio: " +dadoTorneioERede.getTorneio(), Color.BLACK);
-			// Util.InserirValorEmJTextPaneComMarcacaoDeTempo(TelaPrincipal.textPane, "Prêmio: " +dadoTorneioERede.getTotalPremioSemRecomepensaDoTorneio(), Color.BLACK);
-		}
+			}		
+			*/	
 
 		driver.quit();
 		return dadoTorneioERede;
