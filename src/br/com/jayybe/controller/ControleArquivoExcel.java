@@ -38,24 +38,37 @@ public class ControleArquivoExcel {
 
 	public ArrayList<DadosTorneioERede> transformarArquivoXLSEmObjetosDadosETorneio() {
 
-		ArrayList<DadosTorneioERede> dadosTorneioERedeDeRetorno = new ArrayList<DadosTorneioERede>();
+		ArrayList<DadosTorneioERede> dadosTorneioERede = new ArrayList<DadosTorneioERede>();
 
 		if (arquivoExcelTorneios != null) {
-			ArrayList<DadosTorneioERede> dadosTorneioERede = new Util()
+			dadosTorneioERede = new Util()
 					.instanciarTorneioERedeAPartirDeArquivoExcelLocal(arquivoExcelTorneios);
-
-			int quantidadedadosTorneioERede = dadosTorneioERede.size();
-
-			System.out.println("Quantidade Dados E Torneio e Rede no Arquivo: " + quantidadedadosTorneioERede);
-
-			for (DadosTorneioERede dadoTorneioERede : dadosTorneioERede) {
-				DadosTorneioERede dadoTorneioERedeResposta = InserirDadosDePremioERecompensaEmObjetoDadosTorneioERede(
-						dadoTorneioERede);
-				dadosTorneioERedeDeRetorno.add(dadoTorneioERedeResposta);
-			}
 		}
-		return dadosTorneioERedeDeRetorno;
+
+		return dadosTorneioERede;
 	}
+	
+	
+	public ArrayList<DadosTorneioERede> inserePremioERecompensaEmDadosTorneioERede(ArrayList<DadosTorneioERede> dadosTorneioERede){
+		
+
+		ArrayList<DadosTorneioERede> dadosTorneioERedeDeRetorno = new ArrayList<DadosTorneioERede>();
+		
+		for (DadosTorneioERede dadoTorneioERede : dadosTorneioERede) {
+			DadosTorneioERede dadoTorneioERedeResposta = InserirDadosDePremioERecompensaEmObjetoDadosTorneioERede(
+					dadoTorneioERede);
+			dadosTorneioERedeDeRetorno.add(dadoTorneioERedeResposta);
+		}
+	
+	return dadosTorneioERedeDeRetorno;
+	}
+	
+	
+	
+	
+	
+	
+	
 
 	private String retornarURLDaPaginaAPartirDeObjetoDadosTorneioERede(DadosTorneioERede dadosTorneioERede) {
 		String urlDaPagina = "https://pt.sharkscope.com/#Find-Tournament//networks/" + dadosTorneioERede.getRede()
@@ -74,11 +87,11 @@ public class ControleArquivoExcel {
 		String url = retornarURLDaPaginaAPartirDeObjetoDadosTorneioERede(dadoTorneioERede);
 		
 		//Insere Página Selecionada em TextArea
-		Util.InserirValorEmJTextPaneComMarcacaoDeTempo("Página Selecionada a partir da lista: " + url);			
+		Util.EmitirValorTextoEmLogJTextPane("Página Selecionada a partir da lista: " + url);			
 
-		Util.InserirValorEmJTextPaneComMarcacaoDeTempo(url);		
+		Util.EmitirValorTextoEmLogJTextPane(url);		
 		
-		Util.InserirValorEmJTextPaneComMarcacaoDeTempo("Abrindo Browser na URL: " + url);
+		Util.EmitirValorTextoEmLogJTextPane("Abrindo Browser na URL: " + url);
 				
 		// Configura o caminho do driver do Chrome
 		
@@ -90,7 +103,7 @@ public class ControleArquivoExcel {
 		driver.get(url);
 
 		try {								
-			Util.InserirValorEmJTextPaneComMarcacaoDeTempo("Aguardando " + Configuracoes.tempoDeCarregamentoDaPagina + " segundos para carregamento da página");
+			Util.EmitirValorTextoEmLogJTextPane("Aguardando " + Configuracoes.tempoDeCarregamentoDaPagina + " segundos para carregamento da página");
 			
 			Thread.sleep(Configuracoes.tempoDeCarregamentoDaPagina);
 		} catch (InterruptedException e) {
@@ -127,7 +140,7 @@ public class ControleArquivoExcel {
 		
 		//// ID
 		List<WebElement> linhasTabela = driver.findElements(By.cssSelector("[id^='jqg']"));
-		System.out.println("linhasTabela: " + linhasTabela.size());
+		System.out.println("Elementos jg(Jogador):: " + linhasTabela.size());
 
 		for (WebElement webElement : linhasTabela) {
 		    WebElement tdNome = webElement.findElement(By.xpath(".//td[4]//a[@class='playerlink']"));

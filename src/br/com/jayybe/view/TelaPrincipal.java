@@ -142,9 +142,11 @@ public class TelaPrincipal {
 	{
 		System.out.println("Botão pressionado");
 		arquivoExcel = new JanelaDeSelecaoDeArquivoLocal().retornarArquivoExcelComTabelaDados();
-		controleArquivoExcel = new ControleArquivoExcel(arquivoExcel);					
+		controleArquivoExcel = new ControleArquivoExcel(arquivoExcel);
+		
 		dadosTorneioERede = controleArquivoExcel.transformarArquivoXLSEmObjetosDadosETorneio();
-						
+		dadosTorneioERede = controleArquivoExcel.inserePremioERecompensaEmDadosTorneioERede(dadosTorneioERede);
+		
 		System.out.println("Dados Torneio e Rede: " + dadosTorneioERede.size());
 		atualizarArquivoBtn.setEnabled(true);
 	}

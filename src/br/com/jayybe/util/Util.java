@@ -49,7 +49,7 @@ public class Util {
 		return cores[linha % cores.length];
 	}
 
-	public static void InserirValorEmJTextPaneComMarcacaoDeTempo(String texto) {
+	public static void EmitirValorTextoEmLogJTextPane(String texto) {
 	    SwingUtilities.invokeLater(new Runnable() {
 	        public void run() {
 	            // Obtém o modelo do documento do JTextPane
@@ -101,20 +101,24 @@ public class Util {
 
 			// Seleciona a primeira planilha
 			Iterator<Row> rowIterator = workbook.getSheetAt(0).iterator();
+			int linha = 0;
 
 			// Itera sobre as linhas da planilha a partir da linha 2
 			while (rowIterator.hasNext()) {
+				
 				Row row = rowIterator.next();
 
 				// Pula a primeira linha (cabeçalho)
 				if (row.getRowNum() < 1) {
 					continue;
-				}
+				}	
+				
 
 				// Verifica se as colunas A e B estão vazias
 				Cell cellA = row.getCell(0);
 				Cell cellB = row.getCell(1);
 
+				System.out.println("Linha: " + ++linha);
 				System.out.println("Import Célula A: " + cellA);
 				System.out.println("Import Célula B: " + cellB);
 
