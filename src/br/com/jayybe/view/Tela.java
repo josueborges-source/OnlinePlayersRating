@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 
+import br.com.jayybe.model.DadosTorneioERede;
 import br.com.sharskscope.controle.ImportarArquivoExcel;
 
 import javax.swing.JButton;

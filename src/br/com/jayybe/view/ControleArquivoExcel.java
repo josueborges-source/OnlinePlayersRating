@@ -9,10 +9,14 @@ import java.util.List;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+
+import br.com.jayybe.model.DadosTorneioERede;
+import br.com.jayybe.model.EntradaPremioRecompensa;
 
 public class ControleArquivoExcel {
 
@@ -58,42 +62,53 @@ public class ControleArquivoExcel {
 		
 		// Imprime Lista de Premios e Recompensas
 		for (WebElement premioERecompensaElemento : elementosPremioERecompensa) {
-
-			String premioERecompensa = premioERecompensaElemento.getText();
-
-			EntradaPremioRecompensa entradaPremioRecompensa = new EntradaPremioRecompensa();
-
-			if (premioeRecompensaContemParteRecompensas(premioERecompensa)) {
-
-				String premio = retornaPremioDaStringPremioERecompensa(premioERecompensa);
-				
-				Integer premioInteiro = formataPremioParaFormatoInteiro(premio);
-								
-				String recompensa = retornaRecompensaDaStringPremioERecompensa(premioERecompensa);
-				
-				Integer recompensaInteiro = formataRecompensaParaFormatoInteiro(recompensa);				
-							
-				entradaPremioRecompensa.setPremio(premioInteiro);
-				entradaPremioRecompensa.setRecompensa(recompensaInteiro);
-
-				System.out.println("Prêmio Inteiro: " + premioInteiro);
-				System.out.println("Recompensa Inteiro: " + recompensaInteiro);
-			}
-			else if (textoMaiorQueZero(premioERecompensa)) {
-
-				String premio = retornaPremioDaStringPremioERecompensa(premioERecompensa);
-				
-				Integer premioInteiro = formataPremioParaFormatoInteiro(premio);				
-				
-				entradaPremioRecompensa.setPremio(premioInteiro);
-				
-				System.out.println("Prêmio Inteiro: " + premioInteiro);
-			}
+			
+			//TODO
+			EntradaPremioRecompensa entradaPremioRecompensa = 
+					elementoHTMLPremioERecompensaParaModeloPremioRecompensa(premioERecompensaElemento);
+			
 			dadoTorneioERede.adicionaEntradaPremioRecompensa(entradaPremioRecompensa);
 		}
 
 		driverChromePagina.quit();
 		return dadoTorneioERede;
+	}
+
+	private EntradaPremioRecompensa elementoHTMLPremioERecompensaParaModeloPremioRecompensa(
+			WebElement premioERecompensaElemento) {
+		
+		EntradaPremioRecompensa entradaPremioRecompensa = new EntradaPremioRecompensa();
+		String premioERecompensa = premioERecompensaElemento.getText();
+
+		//EntradaPremioRecompensa entradaPremioRecompensa = new EntradaPremioRecompensa();
+
+		if (premioeRecompensaContemParteRecompensas(premioERecompensa)) {
+
+			String premio = retornaPremioDaStringPremioERecompensa(premioERecompensa);
+			
+			Integer premioInteiro = formataPremioParaFormatoInteiro(premio);
+							
+			String recompensa = retornaRecompensaDaStringPremioERecompensa(premioERecompensa);
+			
+			Integer recompensaInteiro = formataRecompensaParaFormatoInteiro(recompensa);				
+						
+			entradaPremioRecompensa.setPremio(premioInteiro);
+			entradaPremioRecompensa.setRecompensa(recompensaInteiro);
+
+			System.out.println("Prêmio Inteiro: " + premioInteiro);
+			System.out.println("Recompensa Inteiro: " + recompensaInteiro);
+		}
+		else if (textoMaiorQueZero(premioERecompensa)) {
+
+			String premio = retornaPremioDaStringPremioERecompensa(premioERecompensa);
+			
+			Integer premioInteiro = formataPremioParaFormatoInteiro(premio);				
+			
+			entradaPremioRecompensa.setPremio(premioInteiro);
+			
+			System.out.println("Prêmio Inteiro: " + premioInteiro);
+		}
+		return entradaPremioRecompensa;
 	}
 
 	private WebDriver configuraPaginaDeElementosPremioERecompensaDaPagina(String urlDaListaDeDadosDoTorneio) {

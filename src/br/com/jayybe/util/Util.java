@@ -42,13 +42,17 @@ public class Util {
 			System.out.println("Prêmio: " + entradaPremioRecompensa.getPremio());
 			System.out.println("Recompensa: " + entradaPremioRecompensa.getRecompensa());
 		}
+	}	
+
+	public static void imprimirDadosTorneioERede(ArrayList<DadosTorneioERede> dadosTorneioERede) {
+
+		for (DadosTorneioERede dadoTorneioERede : dadosTorneioERede) {
+			System.out.println("dadosTorneioERede: " + dadoTorneioERede);
+		}
+
 	}
-
-
-	private Color obterCorLinha(int linha) {
-		return cores[linha % cores.length];
-	}
-
+	
+	/*
 	public static void EmitirValorTextoEmLogJTextPane(String texto) {
 	    SwingUtilities.invokeLater(new Runnable() {
 	        public void run() {
@@ -89,70 +93,5 @@ public class Util {
 	        }
 	    });
 	}
-
-
-	public ArrayList<DadosTorneioERede> instanciarTorneioERedeAPartirDeArquivoExcelLocal(File arquivo) {
-
-		ArrayList<DadosTorneioERede> dados = new ArrayList<>();
-
-		try (FileInputStream file = new FileInputStream(arquivo)) {
-			// Abre o arquivo Excel
-			XSSFWorkbook workbook = new XSSFWorkbook(file);
-
-			// Seleciona a primeira planilha
-			Iterator<Row> rowIterator = workbook.getSheetAt(0).iterator();
-			int linha = 0;
-
-			// Itera sobre as linhas da planilha a partir da linha 2
-			while (rowIterator.hasNext()) {
-				
-				Row row = rowIterator.next();
-
-				// Pula a primeira linha (cabeçalho)
-				if (row.getRowNum() < 1) {
-					continue;
-				}	
-				
-
-				// Verifica se as colunas A e B estão vazias
-				Cell cellA = row.getCell(0);
-				Cell cellB = row.getCell(1);
-
-				System.out.println("Linha: " + ++linha);
-				System.out.println("Import Célula A: " + cellA);
-				System.out.println("Import Célula B: " + cellB);
-
-				if (cellA == null || cellA.getCellType() == CellType.BLANK || cellB == null
-						|| cellB.getCellType() == CellType.BLANK) {
-					break;
-				}
-
-				// Captura os valores das colunas A e B
-				Long torneio = (long) row.getCell(0).getNumericCellValue();
-				String rede = row.getCell(1).getStringCellValue();
-
-				// Cria um objeto DadosTorneioERede e atribui os valores capturados
-				DadosTorneioERede dadosTorneioERede = new DadosTorneioERede();
-				dadosTorneioERede.setTorneio(torneio);
-				dadosTorneioERede.setRede(rede);
-
-				// Adiciona o objeto à lista de dados
-				dados.add(dadosTorneioERede);
-			}
-
-			// Fecha o arquivo Excel
-			workbook.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return dados;
-	}
-
-	public static void imprimirDadosTorneioERede(ArrayList<DadosTorneioERede> dadosTorneioERede) {
-
-		for (DadosTorneioERede dadoTorneioERede : dadosTorneioERede) {
-			System.out.println("dadosTorneioERede: " + dadoTorneioERede);
-		}
-
-	}
+	*/
 }

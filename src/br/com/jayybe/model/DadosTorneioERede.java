@@ -38,6 +38,5 @@ public class DadosTorneioERede {
 	public String toString() {
 		return "DadosTorneioERede [torneio=" + torneio + ", rede=" + rede + ", listaDePremiosDaPagina="
 				+ listaDePremiosDaPagina + "]";
-	}
-	
+	}	
 }

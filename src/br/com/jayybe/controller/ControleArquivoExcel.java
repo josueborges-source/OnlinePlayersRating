@@ -1,55 +1,57 @@
 package br.com.jayybe.controller;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import javax.swing.JFrame;
-import javax.swing.JTextArea;
+import java.io.*;
 
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import java.util.*;
+
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.*;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 
-import br.com.jayybe.model.DadosTorneioERede;
-import br.com.jayybe.model.EntradaPremioRecompensa;
-import br.com.jayybe.util.Configuracoes;
-import br.com.jayybe.util.Util;
-import br.com.jayybe.view.TelaPrincipal;
+import br.com.jayybe.model.*;
+import br.com.jayybe.util.*;
+import br.com.jayybe.view.*;
 
 public class ControleArquivoExcel {
 
-	File arquivoExcelTorneios;
+	private ArrayList<DadosTorneioERede> dadosTorneioERede;	
+	private File arquivoExcelTorneios;
 
+	public ControleArquivoExcel() {
+		
+	}
+	
 	public ControleArquivoExcel(File arquivoExcelTorneios) {
 		this.arquivoExcelTorneios = arquivoExcelTorneios;
 	}
+	
+	public void retornarArquivoExcelParaModeloTorneio()
+	{
+		System.out.println("Botão pressionado");
+		arquivoExcelTorneios = new JanelaDeSelecaoDeArquivoLocal().retornarArquivoExcelComTabelaDados();
+		
+		dadosTorneioERede = transformarArquivoXLSEmObjetosDadosETorneio();
+		dadosTorneioERede = inserePremioERecompensaEmDadosTorneioERede(dadosTorneioERede);
+		
+		System.out.println("Dados Torneio e Rede: " + dadosTorneioERede.size());
+	}
+	
 
-	public ArrayList<DadosTorneioERede> transformarArquivoXLSEmObjetosDadosETorneio() {
+	private ArrayList<DadosTorneioERede> transformarArquivoXLSEmObjetosDadosETorneio() {
 
 		ArrayList<DadosTorneioERede> dadosTorneioERede = new ArrayList<DadosTorneioERede>();
 
 		if (arquivoExcelTorneios != null) {
-			dadosTorneioERede = new Util()
-					.instanciarTorneioERedeAPartirDeArquivoExcelLocal(arquivoExcelTorneios);
+			dadosTorneioERede = instanciarTorneioERedeAPartirDeArquivoExcelLocal(arquivoExcelTorneios);
 		}
 
 		return dadosTorneioERede;
 	}
 	
 	
-	public ArrayList<DadosTorneioERede> inserePremioERecompensaEmDadosTorneioERede(ArrayList<DadosTorneioERede> dadosTorneioERede){
+	private ArrayList<DadosTorneioERede> inserePremioERecompensaEmDadosTorneioERede(ArrayList<DadosTorneioERede> dadosTorneioERede){
 		
 
 		ArrayList<DadosTorneioERede> dadosTorneioERedeDeRetorno = new ArrayList<DadosTorneioERede>();
@@ -62,12 +64,6 @@ public class ControleArquivoExcel {
 	
 	return dadosTorneioERedeDeRetorno;
 	}
-	
-	
-	
-	
-	
-	
 	
 
 	private String retornarURLDaPaginaAPartirDeObjetoDadosTorneioERede(DadosTorneioERede dadosTorneioERede) {
@@ -87,67 +83,41 @@ public class ControleArquivoExcel {
 		String url = retornarURLDaPaginaAPartirDeObjetoDadosTorneioERede(dadoTorneioERede);
 		
 		//Insere Página Selecionada em TextArea
-		Util.EmitirValorTextoEmLogJTextPane("Página Selecionada a partir da lista: " + url);			
-
-		Util.EmitirValorTextoEmLogJTextPane(url);		
-		
-		Util.EmitirValorTextoEmLogJTextPane("Abrindo Browser na URL: " + url);
-				
-		// Configura o caminho do driver do Chrome
-		
-
+		Log.acaoParaLog("Página Selecionada a partir da lista: " + url);
+		Log.acaoParaLog(url);		
+		Log.acaoParaLog("Abrindo Browser na URL: " + url);
+						
 		// Instancia o driver do Chrome
 		WebDriver driver = new ChromeDriver();
 
 		// Navega para o site do Google
 		driver.get(url);
 
-		try {								
-			Util.EmitirValorTextoEmLogJTextPane("Aguardando " + Configuracoes.tempoDeCarregamentoDaPagina + " segundos para carregamento da página");
+		String mensagemDeAguardo = 
+					String.format("Aguardando %s segundos para carregamento da página", Configuracoes.tempoDeCarregamentoDaPagina);			
+		Log.acaoParaLog(mensagemDeAguardo);
 			
-			Thread.sleep(Configuracoes.tempoDeCarregamentoDaPagina);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		aguardeSegundos(Configuracoes.tempoDeCarregamentoDaPagina);	
 
 		TelaPrincipal.frame.revalidate();
 		TelaPrincipal.frame.repaint();
 
-		List<WebElement> selectElements = (List<WebElement>) ((JavascriptExecutor) driver)
-				.executeScript("return document.querySelectorAll(\"select[title='Records per Page']\");");
-
-		// textAreaLogAndamentoProcesso.append("Ampliando tamanho de pesquisa da itens
-		// da página para limite de " + Config.quantidadeDeItensDaPagina);
-
-		WebElement selectElement = selectElements.get(2);
-
-		// Altera o valor do último option para "20000"
-		((JavascriptExecutor) driver).executeScript("var options = arguments[0].getElementsByTagName('option');"
-				+ "options[options.length - 1].value = '20000';" + "options[options.length - 1].text = '20000';",
-				selectElement);
-
-		// Clica no último option
-		((JavascriptExecutor) driver).executeScript("var options = arguments[0].getElementsByTagName('option');"
-				+ "options[options.length - 1].selected = true;" + "arguments[0].dispatchEvent(new Event('change'));",
-				selectElement);
-
-		try {
-			Thread.sleep(10000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		ControleSeleniumDriver controleSeleniumDriver = new ControleSeleniumDriver(driver);		
 		
+		
+		List<WebElement> selectElements = controleSeleniumDriver.retornaElementosSelectDaPagina();
+	
+		WebElement selectElement = selectElements.get(2);
+		
+		controleSeleniumDriver.alteraElementoSelectPara20000(selectElement);		
+		controleSeleniumDriver.clicaNaUltimaOpcaoDeElementoSelect(selectElement);
+
+		aguardeSegundos(1000);	
 		
 		//// ID
-		List<WebElement> linhasTabela = driver.findElements(By.cssSelector("[id^='jqg']"));
-		System.out.println("Elementos jg(Jogador):: " + linhasTabela.size());
-
-		for (WebElement webElement : linhasTabela) {
-		    WebElement tdNome = webElement.findElement(By.xpath(".//td[4]//a[@class='playerlink']"));
-		    System.out.println("Elemento encontrado: " + tdNome);
-		    String nomeJogador = tdNome.getText();
-		    System.out.println("Nome do jogador: " + nomeJogador);
-		}
+		List<WebElement> linhasTabela = controleSeleniumDriver.retornaElementosIdJqg();
+		
+		controleSeleniumDriver.imprimaValoresDasLinhasDaTabela(linhasTabela);	
 		
 		///Refatorado		
 		/*
@@ -249,6 +219,62 @@ public class ControleArquivoExcel {
 		driver.quit();
 		return dadoTorneioERede;
 	}
+	
+	public ArrayList<DadosTorneioERede> instanciarTorneioERedeAPartirDeArquivoExcelLocal(File arquivo) {
+
+		ArrayList<DadosTorneioERede> dados = new ArrayList<>();
+
+		try (FileInputStream file = new FileInputStream(arquivo)) {
+			// Abre o arquivo Excel
+			XSSFWorkbook workbook = new XSSFWorkbook(file);
+
+			// Seleciona a primeira planilha
+			Iterator<Row> rowIterator = workbook.getSheetAt(0).iterator();
+			int linha = 0;
+
+			// Itera sobre as linhas da planilha a partir da linha 2
+			while (rowIterator.hasNext()) {
+				
+				Row row = rowIterator.next();
+
+				// Pula a primeira linha (cabeçalho)
+				if (row.getRowNum() < 1) {
+					continue;
+				}				
+
+				// Verifica se as colunas A e B estão vazias
+				Cell cellA = row.getCell(0);
+				Cell cellB = row.getCell(1);
+
+				System.out.println("Linha: " + ++linha);
+				System.out.println("Import Célula A: " + cellA);
+				System.out.println("Import Célula B: " + cellB);
+
+				if (cellA == null || cellA.getCellType() == CellType.BLANK || cellB == null
+						|| cellB.getCellType() == CellType.BLANK) {
+					break;
+				}
+
+				// Captura os valores das colunas A e B
+				Long torneio = (long) row.getCell(0).getNumericCellValue();
+				String rede = row.getCell(1).getStringCellValue();
+
+				// Cria um objeto DadosTorneioERede e atribui os valores capturados
+				DadosTorneioERede dadosTorneioERede = new DadosTorneioERede();
+				dadosTorneioERede.setTorneio(torneio);
+				dadosTorneioERede.setRede(rede);
+
+				// Adiciona o objeto à lista de dados
+				dados.add(dadosTorneioERede);
+			}
+
+			// Fecha o arquivo Excel
+			workbook.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return dados;
+	}
 
 	public void exportarListaDadosTorneioERedeParaArquivoXLS(ArrayList<DadosTorneioERede> dadosTorneioERede) {
 		try {
@@ -287,6 +313,14 @@ public class ControleArquivoExcel {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	void aguardeSegundos(Integer segundos) {
+		try {
+			Thread.sleep(segundos);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}	
 	}
 
 	/*
