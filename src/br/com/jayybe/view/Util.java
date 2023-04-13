@@ -15,6 +15,7 @@ import br.com.jayybe.model.DadosTorneioERede;
 
 public class Util {
 
+	
 	public ArrayList<DadosTorneioERede> instanciaTorneioERedeAPartirDeArquivoExcelLocal(File arquivo){
 		
 		ArrayList<DadosTorneioERede> dados = new ArrayList<>();
@@ -64,7 +65,7 @@ public class Util {
 	        } catch (IOException e) {
 	            e.printStackTrace();
 	        }
-	        return dados;
-	    
+	        return dados;	    
 	}
+	
 }

@@ -8,7 +8,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class JanelaDeSelecaoDeArquivoLocal {
 	
-	public File retornarArquivoExcelComTabelaDados() {
+	public static File retornarArquivoExcelComTabelaDados() {
 		
 		/// Configuração da Janela de Seleção
 		// Declara variável para arquivo excel a retornar
@@ -46,7 +46,6 @@ public class JanelaDeSelecaoDeArquivoLocal {
 		// Se o usuário selecionou um arquivo,exibe o caminho do arquivo selecionado
 		if (result == JFileChooser.APPROVE_OPTION) {
 			arquivoDoExcelASerRetornado = fileChooser.getSelectedFile();
-			System.out.println("Arquivo selecionado: " + arquivoDoExcelASerRetornado.getAbsolutePath());
 		}
 		return arquivoDoExcelASerRetornado;
 	}
