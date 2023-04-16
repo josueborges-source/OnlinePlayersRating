@@ -17,106 +17,207 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.awt.event.ActionEvent;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 
 public class TelaPrincipal4 {
 
-    private JFrame frame;
-    private JTextField arquivoCaminhoField;
-    private JTable tabelaRedeETorneio;
-    private DefaultTableModel tableModel;
+	private JFrame frame;
+	private JTextField arquivoCaminhoField;
+	private JTable tabelaRedeETorneio;
+	private DefaultTableModel tableModel;
+	private DefaultTableModel tableModelDadosDaWeb;	
+	private JTable tabelaRedeTorneioPremioRecompensa;
+	private JButton importarDadosWebButton;
+	private JButton botaoImportarXLS;
+	private JPanel panelTabelaDadosXLS;
+	private JLabel lblNewLabel;
+	private JLabel labelDadosXLS;
+	private JScrollPane scrollPane;
+	private JScrollPane scrollPane2;
 
-    /**
-     * Launch the application.
-     */
-    public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    TelaPrincipal4 window = new TelaPrincipal4();
-                    window.frame.setVisible(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					TelaPrincipal4 window = new TelaPrincipal4();
+					window.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
 
-    /**
-     * Create the application.
-     */
-    public TelaPrincipal4() {
-        initialize();
-    }
+	/**
+	 * Create the application.
+	 */
+	public TelaPrincipal4() {
+		initialize();
+	}
 
-    /**
-     * Initialize the contents of the frame.
-     */
-    private void initialize() {
-        frame = new JFrame();
-        frame.setBounds(100, 100, 743, 510);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.getContentPane().setLayout(null);
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+		frame = new JFrame();
+		frame.setBounds(100, 100, 912, 531);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
 
-        JButton botaoImportar = new JButton("Importar...");
-        botaoImportar.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+		botaoImportarXLS = new JButton("< ImportarXLS");
+		
+		///Importar Dados Botão		
+		importarDadosWebButton = new JButton("Importar Dados Web >");	
+		
+		importarDadosWebButton.setBounds(307, 150, 175, 40);
+		frame.getContentPane().add(importarDadosWebButton);
+		
+		botaoImportarXLS.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 
-                File caminhoArquivo = SeletorDeArquivos.mostrarSeletorDeArquivo();
+				// 1: Retorna Caminho do Arquivo via Janela
+				File caminhoArquivo = SeletorDeArquivos.mostrarSeletorDeArquivo();
 
-                if (caminhoArquivo != null) {
+				// Se caminho do arquivo foi localizado
+				if (caminhoArquivo != null) {
 
-                    String nomeCaminhoDoArquivo = caminhoArquivo.toString();
+					String nomeCaminhoDoArquivo = caminhoArquivo.toString();
+					// Teste 1 (Caminho do Arquivo via Janela)
+					System.out.println("Nome do Caminho do Arquivo: " + nomeCaminhoDoArquivo);
 
-                    // Teste 1
-                    System.out.println("Nome do Caminho do Arquivo: " + nomeCaminhoDoArquivo);
-                    arquivoCaminhoField.setText(nomeCaminhoDoArquivo);
+					// 2: Atribui nome do arquivo para o textfield
+					arquivoCaminhoField.setText(nomeCaminhoDoArquivo);
 
-                    List<String[]> listaDeTorneiosERedes = LeitorExcel.lerTorneiosERedesExcel(caminhoArquivo);
+					// Teste 2 (Atribui nome do arquivo para o textfield)
+					System.out.println("Valor do texto do textfield: " + arquivoCaminhoField.getText());
 
-                    // Teste 2
-                    for (String[] listaTorneioERede : listaDeTorneiosERedes) {
-                        System.out.println(listaTorneioERede[0]);
-                        System.out.println(listaTorneioERede[1]);
-                    }
+					// 3: Ler campos de torneio e rede do arquivo excel
+					List<String[]> listaDeTorneiosERedes = LeitorExcel.lerTorneiosERedesExcel(caminhoArquivo);
 
-                    atualizaTableModel(listaDeTorneiosERedes);
+					if (listaDeTorneiosERedes != null) {
+						
+						// Teste 3 (Ler campos de torneio e rede do arquivo excel)
+						for (String[] listaTorneioERede : listaDeTorneiosERedes) {
+							System.out.println(listaTorneioERede[0]);
+							System.out.println(listaTorneioERede[1]);
+						}
+						// 4: Seta valores campo de torneio e rede na tabela
+						atualizaTableModelRedeETorneio(listaDeTorneiosERedes);
 
-                }
-            }
-        });
-        botaoImportar.setBounds(316, 40, 104, 23);
-        frame.getContentPane().add(botaoImportar);
+					}
+				}
+			}
+		});
+		
+		importarDadosWebButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				WebDriver driver = new ChromeDriver();
+				System.setProperty("webdriver.chrome.driver", "chromedriver.exe");	
+				
+				List<String[]>valoresDaLinha = new ArrayList<String[]>();
+				int numLinhasTabelaDadosXLS = tabelaRedeETorneio.getRowCount();
+				int numColunasTabelaDadosXLS = tabelaRedeETorneio.getColumnCount();
+				
+				for (int linha = 0; linha < numLinhasTabelaDadosXLS; linha++) {
+					String[]linhaXLS = new String[4];
+					
+				    for (int coluna = 0; coluna < numColunasTabelaDadosXLS; coluna++) {
+				    	
+				    	if(coluna==0) {
+				    		linhaXLS[0]=(String) tabelaRedeETorneio.getValueAt(linha,0);
+				    	}
+				    	else if(coluna==1) {
+				    		linhaXLS[1]=(String) tabelaRedeETorneio.getValueAt(linha,1);
+				    	}			    	
+				    }
+				    valoresDaLinha.add(linhaXLS);
+				    String url = Util.retornarURLAPartirDeArquivoDadosDoTorneio(linhaXLS);
+				    
+				    driver.get(url);
+				    //TODO: Refatorar
+				    System.out.println("Abrindo Página " + (linha + 1) +": " + url);
+				    System.out.println("Tempo Inicio: "+ System.currentTimeMillis()/1000);
+				    
+				    aguardeSegundos(20);
+				    
+				   //TODO: Refatorar
+				    System.out.println("Tempo Termino: "+ System.currentTimeMillis()/1000);
+				    
+				    String html = driver.getPageSource();
+				    System.out.println(html);
+				}
+				atualizaTableModelRedeTorneioPremioERecompensa(valoresDaLinha);
+			}
+		});
+		
+		
+		botaoImportarXLS.setBounds(521, 63, 150, 40);
+		frame.getContentPane().add(botaoImportarXLS);
 
-        arquivoCaminhoField = new JTextField();
-        arquivoCaminhoField.setBounds(50, 74, 370, 20);
-        frame.getContentPane().add(arquivoCaminhoField);
-        arquivoCaminhoField.setColumns(10);
+		arquivoCaminhoField = new JTextField();
+		arquivoCaminhoField.setBounds(50, 71, 391, 24);
+		frame.getContentPane().add(arquivoCaminhoField);
+		arquivoCaminhoField.setColumns(10);
 
-        JLabel lblNewLabel = new JLabel("Arquivo:");
-        lblNewLabel.setBounds(50, 43, 46, 14);
-        frame.getContentPane().add(lblNewLabel);
+		lblNewLabel = new JLabel("Arquivo:");
+		lblNewLabel.setBounds(50, 45, 50, 15);
+		frame.getContentPane().add(lblNewLabel);
 
-        JPanel panel = new JPanel();
-        panel.setBounds(50, 146, 213, 161);
-        frame.getContentPane().add(panel);
-        panel.setLayout(new BorderLayout());
+		///Dados XLS Label
+		labelDadosXLS = new JLabel("Dados do XLS:");
+		labelDadosXLS.setBounds(50, 120, 85, 15);
+		frame.getContentPane().add(labelDadosXLS);
+		
+		///Panel Tabela Dados XLS
+		panelTabelaDadosXLS = new JPanel();
+		panelTabelaDadosXLS.setBounds(50, 150, 215, 160);
+		panelTabelaDadosXLS.setLayout(new BorderLayout());
+		frame.getContentPane().add(panelTabelaDadosXLS);
+		
+		tableModel = new DefaultTableModel(new Object[] { "Rede", "Torneio" }, 0);
+		tabelaRedeETorneio = new JTable(tableModel);
+		scrollPane = new JScrollPane(tabelaRedeETorneio);
+		panelTabelaDadosXLS.add(scrollPane, BorderLayout.CENTER);			
+		
+		//Panel Tabela Dados Retorno da Pagina
+		JPanel panelTabelaDadosRetornoPagina = new JPanel();
+		panelTabelaDadosRetornoPagina.setBounds(521, 150, 320, 160);
+		panelTabelaDadosRetornoPagina.setLayout(new BorderLayout());
+		frame.getContentPane().add(panelTabelaDadosRetornoPagina);
+		
+		tableModelDadosDaWeb = new DefaultTableModel(new Object[] { "Rede", "Torneio", "Prêmio", "Recompensa" }, 0);
+		tabelaRedeTorneioPremioRecompensa = new JTable(tableModelDadosDaWeb);
+		scrollPane2 = new JScrollPane(tabelaRedeTorneioPremioRecompensa);
+		panelTabelaDadosRetornoPagina.add(scrollPane2, BorderLayout.CENTER);
+	}
 
-        tableModel = new DefaultTableModel(new Object[]{"Rede", "Torneio"}, 0);
-        tabelaRedeETorneio = new JTable(tableModel);
-        JScrollPane scrollPane = new JScrollPane(tabelaRedeETorneio);
-        panel.add(scrollPane, BorderLayout.CENTER);
-        
-        JLabel lblNewLabel_1 = new JLabel("Dados do XLS:");
-        lblNewLabel_1.setBounds(50, 121, 83, 14);
-        frame.getContentPane().add(lblNewLabel_1);
-    }
-
-    private void atualizaTableModel(List<String[]> listaDeTorneiosERedes) {
-        tableModel.setRowCount(0); //limpa a tabela
-        for (String[] listaTorneioERede : listaDeTorneiosERedes) {
-            tableModel.addRow(new Object[]{listaTorneioERede[0], listaTorneioERede[1]});
-        }
-    }
+	private void atualizaTableModelRedeETorneio(List<String[]> listaDeTorneiosERedes) {
+		tableModel.setRowCount(0); // limpa a tabela
+		for (String[] listaTorneioERede : listaDeTorneiosERedes) {
+			tableModel.addRow(new Object[] { listaTorneioERede[0], listaTorneioERede[1] });
+		}
+	}
+	
+	private void atualizaTableModelRedeTorneioPremioERecompensa(List<String[]> listaDeTorneiosERedes) {
+		tableModelDadosDaWeb.setRowCount(0); // limpa a tabela
+		for (String[] listaTorneioERede : listaDeTorneiosERedes) {				
+			tableModelDadosDaWeb.addRow(new Object[] { listaTorneioERede[0], listaTorneioERede[1], listaTorneioERede[2], listaTorneioERede[3]});
+		}
+	}
+	
+	public void aguardeSegundos(Integer segundos) {
+	    try {
+	        Thread.sleep(segundos * 1000);
+	    } catch (InterruptedException e) {
+	        e.printStackTrace();
+	    }
+	}
 }
