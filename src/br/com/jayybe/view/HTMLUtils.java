@@ -4,8 +4,11 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -34,18 +37,16 @@ public class HTMLUtils {
 	
 	
 	public static String[] encontrarElementosComIdJqg(String codigoHtml) {
-		Document doc = Jsoup.parse(codigoHtml);
-		
-		Elements elementos = doc.select("[id^='jqg']");
-		String[] resultado = new String[elementos.size()];
-		
-		 int i = 0;
-		    for (Element element : elementos) {
-		    	resultado[i] = element.text();
-		        i++;
+		 Document doc = Jsoup.parse(codigoHtml);
+		    Pattern pattern = Pattern.compile("jqg\\d+$"); // Expressão regular para IDs que começam com 'jqg' e terminam com um ou mais dígitos
+		    List<String> valores = new ArrayList<>();
+		    for (Element element : doc.select("[id]")) { // Seleciona todos os elementos que possuem um atributo ID
+		        String id = element.id();
+		        if (pattern.matcher(id).matches()) { // Verifica se o ID do elemento corresponde à expressão regular
+		            valores.add(element.text());
+		        }
 		    }
-		
-		return resultado;
+		    return valores.toArray(new String[0]);
 	}
 
 }
