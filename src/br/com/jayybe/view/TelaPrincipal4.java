@@ -142,6 +142,7 @@ public class TelaPrincipal4 {
 					String urlDoTorneioERede = Util.retornarURLAPartirDeArquivoDadosDoTorneio(linhaPremioERecompensa);
 
 					WebDriverUtil webDriverUtil = new WebDriverUtil();
+					
 					String codigoHtml = webDriverUtil.getHtml(urlDoTorneioERede);
 
 					aguardeSegundos(20);
@@ -149,8 +150,57 @@ public class TelaPrincipal4 {
 					String[] valoresDaTabelaElements;
 					valoresDaTabelaElements = HTMLUtils.encontrarElementosComIdJqg(codigoHtml);
 					
+					
+					///Separa cada linha de valor da tabela (linha) por informação
 					for (String valorDaTabelaElement : valoresDaTabelaElements) {
+						
 						System.out.println(valorDaTabelaElement);
+						int primeiraOcorrencia = valorDaTabelaElement.indexOf(" ") + 1;
+						System.out.println("Primeira Ocorrencia: " + primeiraOcorrencia);
+						String textoAPartirDaPrimeiraOcorrencia = valorDaTabelaElement.substring(primeiraOcorrencia);
+						System.out.println("Texto a Partir da Primeira Ocorrencia: " + textoAPartirDaPrimeiraOcorrencia);
+						int segundaOcorrencia = textoAPartirDaPrimeiraOcorrencia.indexOf(" ");
+						System.out.println("Segunda Ocorrencia: " + segundaOcorrencia);
+						String nomeDoJogador = textoAPartirDaPrimeiraOcorrencia.substring(0, segundaOcorrencia);
+						System.out.println("Nome do Jogador: " + nomeDoJogador);
+						String textoAPartirDoNomeDoJogador = valorDaTabelaElement.substring(valorDaTabelaElement.indexOf(nomeDoJogador) + nomeDoJogador.length());
+						System.out.println("Texto a partir do nome do jogador: " + textoAPartirDoNomeDoJogador);
+						
+						if(valorDaTabelaElement.contains("$")) {
+							String textoAPartirDoCifrao = valorDaTabelaElement.substring(valorDaTabelaElement.indexOf("$")+1);
+							System.out.println("Texto a partir do cifrao: " + textoAPartirDoCifrao);
+							String valorPremio = textoAPartirDoCifrao.substring(0, textoAPartirDoCifrao.indexOf("(Recompensas:"));					
+							
+							if(!textoAPartirDoCifrao.contains("(Recompensas:")) {
+								valorPremio = textoAPartirDoCifrao.substring(textoAPartirDoCifrao.indexOf("$"));
+								System.out.println("Valor Premio:" + valorPremio);
+							}
+							else {
+								String valorRecompensa;
+								
+								if(segundaOcorrencia==11) {
+									valorPremio = textoAPartirDoCifrao.substring(0, textoAPartirDoCifrao.indexOf("(Recompensas:"));
+									System.out.println("Valor Premio:" + valorPremio);
+									valorRecompensa = textoAPartirDoCifrao.substring(textoAPartirDoCifrao.indexOf("(Recompensas:") + "(Recompensas: $".length(), textoAPartirDoCifrao.indexOf(")") );
+									System.out.println("Valor Recompensa:" +valorRecompensa);
+								}
+								
+								valorPremio = textoAPartirDoCifrao.substring(0, textoAPartirDoCifrao.indexOf("(Recompensas:"));
+								System.out.println("Valor Premio:" + valorPremio);
+								valorRecompensa = textoAPartirDoCifrao.substring(textoAPartirDoCifrao.indexOf("(Recompensas:") + "(Recompensas: $".length(), textoAPartirDoCifrao.indexOf(")") );
+								System.out.println("Valor Recompensa:" +valorRecompensa);								
+							}
+							
+							/*
+							if(textoAPartirDoCifrao.contains("(Recompensas:")) {
+							String valorPremio = textoAPartirDoCifrao.substring(0, textoAPartirDoCifrao.indexOf("(Recompensas:"));
+							System.out.println("Valor Premio:" + valorPremio);
+							String valorRecompensa = textoAPartirDoCifrao.substring(textoAPartirDoCifrao.indexOf("(Recompensas:") + "(Recompensas: $".length(), textoAPartirDoCifrao.indexOf(")") );
+							System.out.println("Valor Recompensa:" +valorRecompensa);							
+							}
+							*/
+							}					
+						//valoresDaTabelaElements[0]= valorDaTabelaElement.indexOf(" ", valorDaTabelaElement.indexOf(" ") + 1);
 					}
 
 					// TODO: Refatorar

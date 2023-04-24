@@ -35,6 +35,7 @@ public class ControleSeleniumDriver {
 				+ "options[options.length - 1].value = '20000';" + "options[options.length - 1].text = '20000';",
 				selectElement);
 	}
+	
 
 	public void clicaNaUltimaOpcaoDeElementoSelect(WebElement selectElement) {
 		((JavascriptExecutor) driver).executeScript("var options = arguments[0].getElementsByTagName('option');"
