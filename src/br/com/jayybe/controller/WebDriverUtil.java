@@ -2,6 +2,8 @@ package br.com.jayybe.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -38,6 +40,48 @@ public class WebDriverUtil {
 	        } catch (InterruptedException e) {
 	            e.printStackTrace();
 	        }
+	    }
+	    
+	    public static String[] extrairInformacao(String inputString) {
+	    		    
+	    		System.out.println(inputString);
+
+	    	    String[] informacaoExtraida = new String[3];
+
+	    	    Pattern namePattern = Pattern.compile("^\\d+\\s+([a-zA-Z0-9_]+).*");
+	    	    Matcher nameMatcher = namePattern.matcher(inputString);
+
+	    	    if (nameMatcher.matches()) {
+	    	        informacaoExtraida[0] = nameMatcher.group(1);
+	    	    } else {
+	    	        informacaoExtraida[0] = "";
+	    	    }
+
+	    	    System.out.println("Nome do jogador: " + informacaoExtraida[0]);
+
+	    	    Pattern valuePattern = Pattern.compile(".*PokerStars\\s*\\$(\\d+(?:\\.\\d{1,2})?)");
+	    	    Matcher valueMatcher = valuePattern.matcher(inputString);
+
+	    	    if (valueMatcher.find()) {
+	    	        informacaoExtraida[1] = valueMatcher.group(1);
+	    	    } else {
+	    	        informacaoExtraida[1] = "";
+	    	    }
+
+	    	    System.out.println("Premio: " + informacaoExtraida[1]);
+
+	    	    Pattern rewardPattern = Pattern.compile("Recompensas:\\s*\\$([\\d,\\.]+)");
+	    	    Matcher rewardMatcher = rewardPattern.matcher(inputString);
+
+	    	    if (rewardMatcher.find()) {
+	    	        informacaoExtraida[2] = rewardMatcher.group(1);
+	    	    } else {
+	    	        informacaoExtraida[2] = "";
+	    	    }
+
+	    	    System.out.println("Recompensa: " + informacaoExtraida[2]);
+
+	    	    return informacaoExtraida;	        
 	    }
 	    
 	    private void alteraValorDoUltimoSelectDaPaginaPara20000(WebDriver driver, WebElement selectElement)
