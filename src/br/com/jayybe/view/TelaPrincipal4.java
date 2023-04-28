@@ -138,6 +138,7 @@ public class TelaPrincipal4 {
 							linhaPremioERecompensa[1] = (String) tabelaRedeETorneio.getValueAt(linha, 1);
 						}
 					}
+					
 					valoresDaLinha.add(linhaPremioERecompensa);
 					String urlDoTorneioERede = Util.retornarURLAPartirDeArquivoDadosDoTorneio(linhaPremioERecompensa);
 
@@ -148,28 +149,43 @@ public class TelaPrincipal4 {
 					aguardeSegundos(20);
 
 					String[] valoresDaTabelaElements;
-					valoresDaTabelaElements = HTMLUtils.encontrarElementosComIdJqg(codigoHtml);
-
-					for (String valorDaTabelaElement : valoresDaTabelaElements) {
+					valoresDaTabelaElements = HTMLUtils.encontrarElementosComIdJqg(codigoHtml);							
+					
+					String[][] listaValorPremioRecompensa = HTMLUtils.retornaValorPremioRecompensa(valoresDaTabelaElements);
+													
+					Double premioTotal = Double.valueOf(0);
+					Double recompensaTotal = Double.valueOf(0);
+					
+					for (int i = 0; i < listaValorPremioRecompensa.length; i++) {
+						System.out.println("Nome: " + listaValorPremioRecompensa[i][0]);	
 						
-						System.out.println("Valor Da Tabela Element: "+ valorDaTabelaElement);
-						
-						String[] valorStringArray = WebDriverUtil.extrairInformacao(valorDaTabelaElement);
-						/*
-						System.out.println("Valor: "+ valorStringArray[0]);
-						System.out.println("Prêmio: "+ valorStringArray[1]);
-						System.out.println("Recompensa: "+ valorStringArray[2]);
-						*/					
+						if(listaValorPremioRecompensa[i][1]!="") {
+							Double premio = Util.valorNaoFormatadoParaDinheiro(listaValorPremioRecompensa[i][1]);
+							premioTotal = Double.sum(premioTotal, premio);
+							System.out.println("Prêmio: " + premio);
+						}
+						if(listaValorPremioRecompensa[i][2]!="") {
+							Double recompensa = Util.valorNaoFormatadoParaDinheiro(listaValorPremioRecompensa[i][2]);
+							recompensaTotal = Double.sum(recompensaTotal, recompensa);
+							System.out.println("Recompensa: " + recompensa);
+						}	
+						System.out.println("premioTotal: "+premioTotal);
+						System.out.println("recompensaTotal: "+recompensaTotal);
 					}
+				
 
 					// TODO: Refatorar
+					/*
 					System.out.println("Abrindo Página " + (linha + 1) + ": " + urlDoTorneioERede);
 					System.out.println("Tempo Inicio: " + System.currentTimeMillis() / 1000);
+					*/
 
 					aguardeSegundos(20);
 
 					// TODO: Refatorar
+					/*
 					System.out.println("Tempo Termino: " + System.currentTimeMillis() / 1000);
+					*/
 
 					System.out.println();
 					// System.out.println(codigoHtmlPagina);

@@ -16,7 +16,6 @@ import br.com.jayybe.model.DadosTorneioERede;
 
 
 public class Util {
-
 	
 	public ArrayList<DadosTorneioERede> instanciaTorneioERedeAPartirDeArquivoExcelLocal(File arquivo){
 		
@@ -89,6 +88,10 @@ public class Util {
 		}
 	}
 	*/
+
+	public static Double valorNaoFormatadoParaDinheiro(String valor) {
+		return Double.parseDouble(valor.replace(",", ""));
+	}
 	
 	
 }
