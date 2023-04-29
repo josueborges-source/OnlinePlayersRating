@@ -5,7 +5,7 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 
-import br.com.jayybe.controller.LeitorExcel;
+import br.com.jayybe.controller.LeitorExcel_old;
 import br.com.jayybe.controller.SeletorDeArquivos;
 import br.com.jayybe.model.DadosTorneioERede;
 
@@ -78,7 +78,7 @@ public class NovaTelaPrincipal {
 	                    System.out.println("Nome do Caminho do Arquivo: " + nomeCaminhoDoArquivo);
 	                    caminhoDoArquivo.setText(nomeCaminhoDoArquivo);
 
-	                    List<String[]> listaDeTorneiosERedes = LeitorExcel.lerTorneiosERedesExcel(caminhoArquivo);
+	                    List<String[]> listaDeTorneiosERedes = LeitorExcel_old.lerTorneiosERedesExcel();
 
 	                    // Teste 2
 	                    for (String[] listaTorneioERede : listaDeTorneiosERedes) {
