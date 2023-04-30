@@ -11,21 +11,27 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
+import br.com.jayybe.view.TelaPrincipal4;
+
 public class WebDriverUtil {
 
 	public String getHtml(String url) {
 		System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
 
+		TelaPrincipal4.atualizarStatusLabel("Abrindo página");
+		
 		WebDriver driver;
 		driver = new ChromeDriver();
 		driver.get(url);
-
+         
+		TelaPrincipal4.atualizarStatusLabel("Abrindo página - Aguardando 20 segundos para carregamento completo");		
 		aguardarSegundos(20);
 
 		List<WebElement> elementosHTML = retornaElementosDeSelecaoDoHTML(driver);
 		alteraValorDoUltimoSelectDaPaginaPara20000(driver, elementosHTML.get(2));
 		clicaNaUltimaOpcaoDeElementoSelect(driver, elementosHTML.get(2));
 
+		TelaPrincipal4.atualizarStatusLabel("Abrindo página - Expandindo Prêmios e Recompensas ao limite");		
 		aguardarSegundos(20);
 		String html = driver.getPageSource();
 

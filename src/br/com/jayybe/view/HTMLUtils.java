@@ -26,17 +26,12 @@ import br.com.jayybe.controller.WebDriverUtil;
 
 public class HTMLUtils {
 
-	/*
-	 * public static String[] encontrarElementosComIdJqg(String codigoHtml) {
-	 * WebDriver driver = new ChromeDriver(); driver.get(codigoHtml);
-	 * List<WebElement> elementos =
-	 * driver.findElements(By.cssSelector("*[id^='jqg']")); String[] elementosJQG =
-	 * new String[elementos.size()]; for (int i = 0; i < elementosJQG.length; i++) {
-	 * elementosJQG[i] = elementos.get(i).getText(); } return elementosJQG; }
-	 */
 
 	public static String[] encontrarElementosComIdJqg(String codigoHtml) {
 		Document doc = Jsoup.parse(codigoHtml);
+		
+		TelaPrincipal4.atualizarStatusLabel("Procurando Elementos de Jogo");
+		
 		Pattern pattern = Pattern.compile("jqg\\d+$"); // Expressão regular para IDs que começam com 'jqg' e terminam
 														// com um ou mais dígitos
 		List<String> valores = new ArrayList<>();
@@ -55,15 +50,7 @@ public class HTMLUtils {
 
 		for (int i = 0; i < valoresDaTabelaElements.length; i++) {
 			String[] valorStringArray = extrairInformacao(valoresDaTabelaElements[i]);
-			valorPremioRecompensa[i] = valorStringArray;
-			
-			/// TelaPrincipal4.atualizarStatusLabel("Rebido valor da tabela: " + valorStringArray[0] + ", " + valorStringArray[1] + ", " + valorStringArray[2]);
-			/*
-			System.out.println("Linha do Texto da Tabela: " + valoresDaTabelaElements[i]);
-			System.out.println("Nome do Usuário: " + valorStringArray[0]);
-			System.out.println("Prêmio: " + valorStringArray[1]);
-			System.out.println("Recompensa: " + valorStringArray[2]);
-			*/
+			valorPremioRecompensa[i] = valorStringArray;		
 		}
 		return valorPremioRecompensa;
 	}

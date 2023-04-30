@@ -47,8 +47,7 @@ public class LeitorExcel {
 	}
 
 	public static void setArquivo(File arquivo) {		
-		SwingUtilities.invokeLater(() -> {
-	        LeitorExcel.arquivo = arquivo;
+		
 	        try {
 	            LeitorExcel.workbook = new XSSFWorkbook(arquivo);
 	        } catch (InvalidFormatException | IOException e) {
@@ -56,7 +55,6 @@ public class LeitorExcel {
 	            TelaPrincipal4.atualizarStatusLabel("Erro no Arquivo: " + e.getMessage());
 	            e.printStackTrace();
 	        }
-	    });
 	}
 
 	public LeitorExcel(File arquivo) throws IOException {
