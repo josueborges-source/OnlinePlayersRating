@@ -221,11 +221,11 @@ public class TelaPrincipal4 {
 							System.out.println("linhaPremioERecompensa[1]: " + linhaPremioERecompensa[1]);
 						} else if(coluna == 2) {
 							linhaPremioERecompensa[2] = (String) tabelaRedeTorneioPremioRecompensa.getValueAt(linha, 2);
-							LeitorExcel.insertValueIntoColumn1(linhaPremioERecompensa[2]);
+							LeitorExcel.inserirValorNaColuna3(linhaPremioERecompensa[2]);
 							System.out.println("linhaPremioERecompensa[2]: " + linhaPremioERecompensa[2]);
 						} else if(coluna == 3) {
 							linhaPremioERecompensa[3] = (String) tabelaRedeTorneioPremioRecompensa.getValueAt(linha, 3);
-							LeitorExcel.insertValueIntoColumn2(linhaPremioERecompensa[3]);
+							LeitorExcel.inserirValorNaColuna4(linhaPremioERecompensa[3]);
 							System.out.println("linhaPremioERecompensa[3]: " + linhaPremioERecompensa[3]);
 						}
 					}
