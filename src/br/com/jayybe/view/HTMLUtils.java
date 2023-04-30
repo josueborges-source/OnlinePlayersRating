@@ -56,6 +56,8 @@ public class HTMLUtils {
 		for (int i = 0; i < valoresDaTabelaElements.length; i++) {
 			String[] valorStringArray = extrairInformacao(valoresDaTabelaElements[i]);
 			valorPremioRecompensa[i] = valorStringArray;
+			
+			/// TelaPrincipal4.atualizarStatusLabel("Rebido valor da tabela: " + valorStringArray[0] + ", " + valorStringArray[1] + ", " + valorStringArray[2]);
 			/*
 			System.out.println("Linha do Texto da Tabela: " + valoresDaTabelaElements[i]);
 			System.out.println("Nome do Usuário: " + valorStringArray[0]);

@@ -76,6 +76,8 @@ public class Util {
 	
 		String urlDaPagina = "https://pt.sharkscope.com/#Find-Tournament//networks/" + torneio
 				+ "/tournaments/" + rede;
+		
+		TelaPrincipal4.atualizarStatusLabel("Retornando URDaPágina: " + urlDaPagina);
 
 		return urlDaPagina;
 	}

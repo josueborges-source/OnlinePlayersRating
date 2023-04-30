@@ -14,6 +14,9 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -22,6 +25,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import br.com.jayybe.model.DadosTorneioERede;
 import br.com.jayybe.model.EntradaPremioRecompensa;
+import br.com.jayybe.view.TelaPrincipal4;
 
 public class LeitorExcel {
 
@@ -42,15 +46,18 @@ public class LeitorExcel {
 		return arquivo;
 	}
 
-	public static void setArquivo(File arquivo) {
-		LeitorExcel.arquivo = arquivo;
-		try {
-			LeitorExcel.workbook = new XSSFWorkbook(arquivo);
-		} catch (InvalidFormatException | IOException e) {
-			e.printStackTrace();
-		}
+	public static void setArquivo(File arquivo) {		
+		SwingUtilities.invokeLater(() -> {
+	        LeitorExcel.arquivo = arquivo;
+	        try {
+	            LeitorExcel.workbook = new XSSFWorkbook(arquivo);
+	        } catch (InvalidFormatException | IOException e) {
+	            JOptionPane.showMessageDialog(null, e);
+	            TelaPrincipal4.atualizarStatusLabel("Erro no Arquivo: " + e.getMessage());
+	            e.printStackTrace();
+	        }
+	    });
 	}
-
 
 	public LeitorExcel(File arquivo) throws IOException {
 		LeitorExcel.arquivo = arquivo;
@@ -125,8 +132,7 @@ public class LeitorExcel {
 		}
 	}
 
-	public static void inserirValorNaColuna3(String valor) {
-
+	public static void inserirValorNaColuna3(String valor, int linha) {
 		try {
 			FileInputStream file;
 			file = new FileInputStream(arquivo);
@@ -147,9 +153,10 @@ public class LeitorExcel {
 			XSSFSheet sheet = workbook.getSheetAt(0);
 
 			// Cria uma nova linha
-			XSSFRow row = sheet.createRow(linhaAtual);
+			XSSFRow row = sheet.createRow(linha);
 
-			// Insere o valor na coluna 3 da nova linha (considerando que a primeira coluna é a coluna 0)
+			// Insere o valor na coluna 3 da nova linha (considerando que a primeira coluna
+			// é a coluna 0)
 			XSSFCell cell = row.createCell(2);
 			cell.setCellValue(valor);
 
@@ -160,12 +167,10 @@ public class LeitorExcel {
 			fileOut.close();
 		} catch (IOException e1) {
 			e1.printStackTrace();
-		}	
+		}
 	}
-	
 
-	public static void inserirValorNaColuna4(String valor) {
-
+	public static void inserirValorNaColuna4(String valor, int linha) {
 		try {
 			FileInputStream file;
 			file = new FileInputStream(arquivo);
@@ -185,15 +190,16 @@ public class LeitorExcel {
 			// Seleciona a primeira planilha
 			XSSFSheet sheet = workbook.getSheetAt(0);
 
+			// Atualiza o contador de linhas
+			linhaAtual = linha + 1;
+
 			// Cria uma nova linha
 			XSSFRow row = sheet.createRow(linhaAtual);
 
-			// Insere o valor na coluna 3 da nova linha (considerando que a primeira coluna é a coluna 0)
+			// Insere o valor na coluna 4 da nova linha (considerando que a primeira coluna
+			// é a coluna 0)
 			XSSFCell cell = row.createCell(3);
 			cell.setCellValue(valor);
-
-			// Atualiza o contador de linhas
-			linhaAtual++;
 
 			// Salva as alterações no arquivo Excel
 			FileOutputStream fileOut = new FileOutputStream(arquivo);
@@ -202,14 +208,48 @@ public class LeitorExcel {
 			fileOut.close();
 		} catch (IOException e1) {
 			e1.printStackTrace();
-		}	
+		}
 	}
-	/*
-	 * public static void writeWorkbookToFile() {
-	 * 
-	 * try { FileOutputStream out = new FileOutputStream(arquivo);
-	 * workbook.write(out); workbook.close(); out.close();
-	 * System.out.println("Planilha exportada com sucesso!"); } catch (IOException
-	 * e) { e.printStackTrace(); } }
-	 */
+	
+	public static void insereValor(int linha, int coluna, String valor) {
+		try {
+	    FileInputStream arquivoEntrada;
+			arquivoEntrada = new FileInputStream(arquivo);
+		
+	    XSSFWorkbook workbook = new XSSFWorkbook(arquivoEntrada);
+	    XSSFSheet sheet = workbook.getSheetAt(0); // planilha de índice 0
+	    
+	    // acessando a célula de acordo com a linha e coluna especificadas
+	    XSSFRow row = sheet.getRow(linha-1); // subtraindo 1 porque as linhas começam em 0
+	    if (row == null) {
+	        row = sheet.createRow(linha-1);
+	    }
+	    XSSFCell cell = row.getCell(coluna-1); // subtraindo 1 porque as colunas começam em 0
+	    if (cell == null) {
+	        cell = row.createCell(coluna-1);
+	    }
+	    
+	    // definindo o valor da célula
+	    cell.setCellValue(valor);
+	    
+	    // salvando o arquivo
+	    FileOutputStream arquivoSaida = new FileOutputStream(arquivo);
+	    workbook.write(arquivoSaida);
+	    arquivoSaida.close();
+	    workbook.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 }
+
+/*
+ * public static void writeWorkbookToFile() {
+ * 
+ * try { FileOutputStream out = new FileOutputStream(arquivo);
+ * workbook.write(out); workbook.close(); out.close();
+ * System.out.println("Planilha exportada com sucesso!"); } catch (IOException
+ * e) { e.printStackTrace(); } }
+ */

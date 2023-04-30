@@ -26,6 +26,10 @@ import java.util.List;
 import java.awt.event.ActionEvent;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import java.awt.Font;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
 public class TelaPrincipal4 {
 
@@ -42,6 +46,9 @@ public class TelaPrincipal4 {
 	private JLabel labelDadosXLS;
 	private JScrollPane scrollPane;
 	private JScrollPane scrollPane2;
+	private JLabel tituloStatusLabel = new JLabel("Status:");
+	private static JLabel statusLabel = new JLabel("Aguardando");
+	JButton exportarDadosButton = new JButton("Exportar Dados XLS");
 
 	/**
 	 * Launch the application.
@@ -86,6 +93,11 @@ public class TelaPrincipal4 {
 		botaoImportarXLS.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
+				importarDadosWebButton.setEnabled(false);
+				botaoImportarXLS.setEnabled(false);
+				exportarDadosButton.setEnabled(false);				
+				
+				
 				// 1: Retorna Caminho do Arquivo via Janela
 				File arquivoExcel = SeletorDeArquivos.mostrarSeletorDeArquivo();
 
@@ -107,7 +119,7 @@ public class TelaPrincipal4 {
 					LeitorExcel.setArquivo(arquivoExcel);
 					System.out.println(arquivoExcel.getName());
 					
-					System.out.println("LeitorArquivoExcel: " + LeitorExcel.getArquivo().getName());
+					//System.out.println("LeitorArquivoExcel: " + LeitorExcel.getArquivo().getName());
 					List<String[]> listaDeTorneiosERedes = LeitorExcel.lerTorneiosERedesExcel();
 
 					if (listaDeTorneiosERedes != null) {
@@ -122,9 +134,17 @@ public class TelaPrincipal4 {
 
 					}
 				}
+				
+				importarDadosWebButton.setEnabled(true);
+				botaoImportarXLS.setEnabled(true);
+				exportarDadosButton.setEnabled(false);		
+				
+				TelaPrincipal4.atualizarStatusLabel("Importado Arquivo XLS");
+				
 			}
 		});
-
+		
+		/*
 		importarDadosWebButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
@@ -143,8 +163,8 @@ public class TelaPrincipal4 {
 						} else if (coluna == 1) {
 							linhaPremioERecompensa[1] = (String) tabelaRedeETorneio.getValueAt(linha, 1);
 						}
-					}					
-					
+					}
+
 					String urlDoTorneioERede = Util.retornarURLAPartirDeArquivoDadosDoTorneio(linhaPremioERecompensa);
 
 					WebDriverUtil webDriverUtil = new WebDriverUtil();
@@ -154,43 +174,45 @@ public class TelaPrincipal4 {
 					aguardeSegundos(20);
 
 					String[] valoresDaTabelaElements;
-					valoresDaTabelaElements = HTMLUtils.encontrarElementosComIdJqg(codigoHtml);							
-					
-					String[][] listaValorPremioRecompensa = HTMLUtils.retornaValorPremioRecompensa(valoresDaTabelaElements);
-													
+					valoresDaTabelaElements = HTMLUtils.encontrarElementosComIdJqg(codigoHtml);
+
+					String[][] listaValorPremioRecompensa = HTMLUtils
+							.retornaValorPremioRecompensa(valoresDaTabelaElements);
+
 					Double premioTotal = Double.valueOf(0);
 					Double recompensaTotal = Double.valueOf(0);
-					
+
 					for (int i = 0; i < listaValorPremioRecompensa.length; i++) {
-						System.out.println("Nome: " + listaValorPremioRecompensa[i][0]);	
-						
-						if(listaValorPremioRecompensa[i][1]!="") {
-							Double premio = Util.valorNaoFormatadoParaDinheiro(listaValorPremioRecompensa[i][1]);							
+						System.out.println("Nome: " + listaValorPremioRecompensa[i][0]);
+
+						if (listaValorPremioRecompensa[i][1] != "") {
+							Double premio = Util.valorNaoFormatadoParaDinheiro(listaValorPremioRecompensa[i][1]);
 							premioTotal = Double.sum(premioTotal, premio);
-							//System.out.println("Prêmio Atual: " + premio);
-							//System.out.println("Prêmio Total: " + premioTotal + "-" + (premioTotal - premio) +  "=" + premio);
-							System.out.println();
-							//System.out.println("Prêmio: " + premio);
+							// System.out.println("Prêmio Atual: " + premio);
+							// System.out.println("Prêmio Total: " + premioTotal + "-" + (premioTotal -
+							// premio) + "=" + premio);
+							// System.out.println();
+							// System.out.println("Prêmio: " + premio);
 						}
-						if(listaValorPremioRecompensa[i][2]!="") {
+						if (listaValorPremioRecompensa[i][2] != "") {
 							Double recompensa = Util.valorNaoFormatadoParaDinheiro(listaValorPremioRecompensa[i][2]);
-							recompensaTotal = Double.sum(recompensaTotal, recompensa);							
-							//System.out.println("Recompensa Atual: " + recompensa );
-							//System.out.println("Recompensa Total: " + recompensaTotal + "-" + (recompensaTotal - recompensa) + "=" + recompensa);
-							//System.out.println();
-							//System.out.println("Recompensa: " + recompensa);
+							recompensaTotal = Double.sum(recompensaTotal, recompensa);
+							// System.out.println("Recompensa Atual: " + recompensa );
+							// System.out.println("Recompensa Total: " + recompensaTotal + "-" +
+							// (recompensaTotal - recompensa) + "=" + recompensa);
+							// System.out.println();
+							// System.out.println("Recompensa: " + recompensa);
 						}
 						System.out.println();
 					}
-					
+
 					aguardeSegundos(20);
-					
+
 					DecimalFormat df = new DecimalFormat("0.00");
-					
+
 					linhaPremioERecompensa[2] = df.format(premioTotal).toString();
 					linhaPremioERecompensa[3] = df.format(recompensaTotal).toString();
-					
-					
+
 					valoresDaLinha.add(linhaPremioERecompensa);
 
 					System.out.println();
@@ -199,8 +221,101 @@ public class TelaPrincipal4 {
 				atualizaTableModelRedeTorneioPremioERecompensa(valoresDaLinha);
 			}
 		});
+		*/
 		
-		JButton exportarDadosButton = new JButton("Exportar Dados XLS");
+		importarDadosWebButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+			@Override
+			protected Void doInBackground() throws Exception {
+
+				TelaPrincipal4.atualizarStatusLabel("Importando Dados do Arquivo");
+				
+				
+				List<String[]> valoresDaLinha = new ArrayList<String[]>();
+
+				int numLinhasTabelaImportacaoXLS = tabelaRedeETorneio.getRowCount();
+				int numColunasTabelaImportacaoXLS = tabelaRedeETorneio.getColumnCount();
+
+				for (int linha = 0; linha < numLinhasTabelaImportacaoXLS; linha++) {
+					String[] linhaPremioERecompensa = new String[4];
+
+					for (int coluna = 0; coluna < numColunasTabelaImportacaoXLS; coluna++) {
+
+						if (coluna == 0) {
+							linhaPremioERecompensa[0] = (String) tabelaRedeETorneio.getValueAt(linha, 0);
+						} else if (coluna == 1) {
+							linhaPremioERecompensa[1] = (String) tabelaRedeETorneio.getValueAt(linha, 1);
+						}
+					}
+
+					String urlDoTorneioERede = Util.retornarURLAPartirDeArquivoDadosDoTorneio(linhaPremioERecompensa);
+
+					WebDriverUtil webDriverUtil = new WebDriverUtil();
+
+					String codigoHtml = webDriverUtil.getHtml(urlDoTorneioERede);
+
+					aguardeSegundos(20);
+
+					String[] valoresDaTabelaElements;
+					valoresDaTabelaElements = HTMLUtils.encontrarElementosComIdJqg(codigoHtml);
+
+					String[][] listaValorPremioRecompensa = HTMLUtils
+							.retornaValorPremioRecompensa(valoresDaTabelaElements);
+
+					Double premioTotal = Double.valueOf(0);
+					Double recompensaTotal = Double.valueOf(0);
+
+					for (int i = 0; i < listaValorPremioRecompensa.length; i++) {
+						System.out.println("Nome: " + listaValorPremioRecompensa[i][0]);
+
+						if (listaValorPremioRecompensa[i][1] != "") {
+							Double premio = Util.valorNaoFormatadoParaDinheiro(listaValorPremioRecompensa[i][1]);
+							premioTotal = Double.sum(premioTotal, premio);
+							// System.out.println("Prêmio Atual: " + premio);
+							// System.out.println("Prêmio Total: " + premioTotal + "-" + (premioTotal -
+							// premio) + "=" + premio);
+							// System.out.println();
+							// System.out.println("Prêmio: " + premio);
+						}
+						if (listaValorPremioRecompensa[i][2] != "") {
+							Double recompensa = Util.valorNaoFormatadoParaDinheiro(listaValorPremioRecompensa[i][2]);
+							recompensaTotal = Double.sum(recompensaTotal, recompensa);
+							// System.out.println("Recompensa Atual: " + recompensa );
+							// System.out.println("Recompensa Total: " + recompensaTotal + "-" +
+							// (recompensaTotal - recompensa) + "=" + recompensa);
+							// System.out.println();
+							// System.out.println("Recompensa: " + recompensa);
+						}
+						System.out.println();
+					}
+
+					aguardeSegundos(20);
+
+					DecimalFormat df = new DecimalFormat("0.00");
+
+					linhaPremioERecompensa[2] = df.format(premioTotal).toString();
+					linhaPremioERecompensa[3] = df.format(recompensaTotal).toString();
+
+					valoresDaLinha.add(linhaPremioERecompensa);
+
+					System.out.println();
+				}
+				System.out.println(LeitorExcel.getArquivo());
+				atualizaTableModelRedeTorneioPremioERecompensa(valoresDaLinha);
+			return null;
+			}
+			@Override
+		     protected void done() {
+		        // Atualizar a interface do usuário aqui
+		     }
+		  };
+
+		  worker.execute();
+		}
+		});
+		
+		
 		exportarDadosButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {		
 				
@@ -221,11 +336,11 @@ public class TelaPrincipal4 {
 							System.out.println("linhaPremioERecompensa[1]: " + linhaPremioERecompensa[1]);
 						} else if(coluna == 2) {
 							linhaPremioERecompensa[2] = (String) tabelaRedeTorneioPremioRecompensa.getValueAt(linha, 2);
-							LeitorExcel.inserirValorNaColuna3(linhaPremioERecompensa[2]);
+							LeitorExcel.insereValor(linha+2, coluna+1, linhaPremioERecompensa[2]);
 							System.out.println("linhaPremioERecompensa[2]: " + linhaPremioERecompensa[2]);
 						} else if(coluna == 3) {
 							linhaPremioERecompensa[3] = (String) tabelaRedeTorneioPremioRecompensa.getValueAt(linha, 3);
-							LeitorExcel.inserirValorNaColuna4(linhaPremioERecompensa[3]);
+							LeitorExcel.insereValor(linha+2, coluna+1, linhaPremioERecompensa[3]);
 							System.out.println("linhaPremioERecompensa[3]: " + linhaPremioERecompensa[3]);
 						}
 					}
@@ -238,7 +353,7 @@ public class TelaPrincipal4 {
 		exportarDadosButton.setBounds(300, 348, 320, 30);
 		frame.getContentPane().add(exportarDadosButton);
 
-		botaoImportarXLS.setBounds(479, 63, 150, 40);
+		botaoImportarXLS.setBounds(479, 63, 141, 40);
 		frame.getContentPane().add(botaoImportarXLS);
 
 		arquivoCaminhoField = new JTextField();
@@ -276,6 +391,15 @@ public class TelaPrincipal4 {
 		tabelaRedeTorneioPremioRecompensa = new JTable(tableModelDadosDaWeb);
 		scrollPane2 = new JScrollPane(tabelaRedeTorneioPremioRecompensa);
 		panelTabelaDadosRetornoPagina.add(scrollPane2, BorderLayout.CENTER);
+		
+		tituloStatusLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
+		tituloStatusLabel.setBounds(300, 120, 46, 14);
+		frame.getContentPane().add(tituloStatusLabel);
+		statusLabel.setHorizontalAlignment(SwingConstants.TRAILING);
+		statusLabel.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		
+		statusLabel.setBounds(345, 120, 275, 14);
+		frame.getContentPane().add(statusLabel);
 	}
 
 	private void atualizaTableModelRedeETorneio(List<String[]> listaDeTorneiosERedes) {
@@ -299,5 +423,14 @@ public class TelaPrincipal4 {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static void atualizarStatusLabel(String texto) {
+		
+	    SwingUtilities.invokeLater(new Runnable() {
+	        public void run() {
+	            statusLabel.setText(texto);
+	        }
+	    });
 	}
 }
