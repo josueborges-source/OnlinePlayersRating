@@ -1,6 +1,7 @@
 package br.com.jayybe.view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -18,22 +19,23 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.awt.event.ActionEvent;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
 import java.awt.Font;
+import java.awt.Image;
+
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.Timer;
+import javax.swing.border.Border;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 
 public class TelaPrincipal4 {
 
+	public static JLabel cardsLabel = new JLabel("");
 	private JFrame frame;
 	private JTextField arquivoCaminhoField;
 	private JTable tabelaRedeETorneio;
@@ -49,7 +51,13 @@ public class TelaPrincipal4 {
 	private JScrollPane scrollPane2;
 	private JLabel tituloStatusLabel = new JLabel("Status:");
 	private static JLabel statusLabel = new JLabel("Aguardando Comandos");
-	JButton exportarDadosButton = new JButton("Exportar Dados XLS");
+	private JButton exportarDadosButton = new JButton("Exportar Dados XLS");
+	private Border border;
+	
+	static public Timer timer;
+	static StringBuilder textoFinal;
+	static private JLabel carregandoLabel = new JLabel();
+	
 
 	/**
 	 * Launch the application.
@@ -78,12 +86,14 @@ public class TelaPrincipal4 {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		
 		frame = new JFrame();
 		frame.setBounds(100, 100, 1056, 532);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().setLayout(null);
+		frame.getContentPane().setLayout(null);	
 
-		botaoImportarXLS = new JButton("< ImportarXLS");
+
+		botaoImportarXLS = new JButton("Importar XLS");
 
 		/// Importar Dados Botão
 		importarDadosWebButton = new JButton("Importar Dados Web");
@@ -91,11 +101,12 @@ public class TelaPrincipal4 {
 
 		importarDadosWebButton.setBounds(50, 348, 215, 30);
 		frame.getContentPane().add(importarDadosWebButton);
+		TelaPrincipal4.atualizarStatusLabel("Aguardando Comandos", Seletor.TRES_PONTOS);
 
 		botaoImportarXLS.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				TelaPrincipal4.atualizarStatusLabel("Aguardando Comandos");
+				TelaPrincipal4.atualizarStatusLabel("Aguardando Comandos", Seletor.TRES_PONTOS);
 
 				importarDadosWebButton.setEnabled(false);
 				botaoImportarXLS.setEnabled(false);
@@ -142,18 +153,20 @@ public class TelaPrincipal4 {
 				botaoImportarXLS.setEnabled(true);
 				exportarDadosButton.setEnabled(false);
 
-				TelaPrincipal4.atualizarStatusLabel("Importado Arquivo XLS");
+				TelaPrincipal4.atualizarStatusLabel("Aguardando Comandos", Seletor.TRES_PONTOS);
 
 			}
 		});
 
 		importarDadosWebButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
 				SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+					
 					@Override
 					protected Void doInBackground() throws Exception {
 
-						TelaPrincipal4.atualizarStatusLabel("Importando Dados do Arquivo");
+						TelaPrincipal4.atualizarStatusLabel("Importando Dados do Arquivo", Seletor.TRANSFORMACAO_EM_MAISCULO);
 
 						List<String[]> valoresDaLinha = new ArrayList<String[]>();
 
@@ -218,9 +231,9 @@ public class TelaPrincipal4 {
 							botaoImportarXLS.setEnabled(true);
 							exportarDadosButton.setEnabled(true);
 
-							TelaPrincipal4.atualizarStatusLabel("Aguardando Comandos");
 						}
 
+						TelaPrincipal4.atualizarStatusLabel("Aguardando Comandos", Seletor.TRES_PONTOS);
 						System.out.println(LeitorExcel.getArquivo());
 						atualizaTableModelRedeTorneioPremioERecompensa(valoresDaLinha);
 						return null;
@@ -231,15 +244,16 @@ public class TelaPrincipal4 {
 						// Atualizar a interface do usuário aqui
 					}
 				};
-
+				TelaPrincipal4.atualizarStatusLabel("Aguardando Comandos", Seletor.TRES_PONTOS);
 				worker.execute();
 			}
 		});
 		exportarDadosButton.setEnabled(false);
 
 		exportarDadosButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-
+			
+			public void actionPerformed(ActionEvent e) {				
+				
 				int numLinhasTabelaImportacaoXLS = tabelaRedeTorneioPremioRecompensa.getRowCount();
 				int numColunasTabelaImportacaoXLS = tabelaRedeTorneioPremioRecompensa.getColumnCount();
 
@@ -322,6 +336,36 @@ public class TelaPrincipal4 {
 
 		statusLabel.setBounds(345, 120, 275, 14);
 		frame.getContentPane().add(statusLabel);
+		ImageIcon imageIcon = new ImageIcon(TelaPrincipal4.class.getResource("/resource/loading.gif"));		
+		Image image = imageIcon.getImage();		
+		Image novaImagem = image.getScaledInstance(50, 50, Image.SCALE_SMOOTH);		
+		ImageIcon novoIcone = new ImageIcon(novaImagem);
+				
+		imageIcon.setImage(novaImagem);
+		
+		border = BorderFactory.createLineBorder(Color.BLACK, 2);
+		
+		cardsLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		cardsLabel.setIcon(new ImageIcon(TelaPrincipal4.class.getResource("/resource/giphy.gif")));
+		cardsLabel.setBounds(685, 162, 120, 120);
+		
+		cardsLabel.setBorder(border);
+		
+		frame.getContentPane().add(cardsLabel);
+		
+		carregandoLabel = new JLabel("");
+		
+		
+		carregandoLabel.setOpaque(false);
+		carregandoLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		carregandoLabel.setIcon(new ImageIcon(TelaPrincipal4.class.getResource("/resource/loading.gif")));
+		carregandoLabel.setBounds(685, 162, 120, 120);
+		
+		carregandoLabel.setBorder(border);
+		
+		
+		carregandoLabel.setBorder(border);
+		frame.getContentPane().add(carregandoLabel);
 	}
 
 	private void atualizaTableModelRedeETorneio(List<String[]> listaDeTorneiosERedes) {
@@ -340,6 +384,7 @@ public class TelaPrincipal4 {
 	}
 
 	public void aguardeSegundos(Integer segundos) {
+		
 		try {
 			Thread.sleep(segundos * 1000);
 		} catch (InterruptedException e) {
@@ -347,33 +392,87 @@ public class TelaPrincipal4 {
 		}
 	}
 
-	static public Timer timer;
-	static public String textoAtual;
 	
-	public static void atualizarStatusLabel(String texto) {		  
-		
-		Timer timer = new Timer(1000, new ActionListener() {
-	        boolean uppercase = false;
-	        StringBuilder sb = new StringBuilder(texto);
 
-	        @Override
-	        public void actionPerformed(ActionEvent e) {
-	            for (int i = 0; i < sb.length(); i++) {
-	                if (uppercase) {
-	                    sb.toString().toUpperCase();
-	                } else {
-	                    sb.toString().toLowerCase();
-	                }
-	                uppercase = !uppercase;
-	            }
-	            statusLabel.setText(sb.toString());
-	        }
-	    });
-	    timer.start();
+	public static void atualizarStatusLabel(String texto, Seletor seletor) {
+		
+		if(texto.contains("Aguardando")) {
+			cardsLabel.setEnabled(false);
+			carregandoLabel.setEnabled(true);
+			
+		}
+		else {
+			cardsLabel.setEnabled(true);
+			carregandoLabel.setEnabled(false);		}
+		
+		
+		if (timer != null) {
+			timer.stop();
+		}
+
+		timer = new Timer(250, new ActionListener() {
+
+			StringBuilder textoASerImplementado = new StringBuilder(texto);
+			int contagemDoElementoMaiusculo = 0;
+			boolean progressao = true;
+			boolean tresPontosNaString = false;
+			
+			StringBuilder textoFinal = new StringBuilder(texto);
+
+			public void actionPerformed(ActionEvent e) {					
+				
+				if (seletor.equals(Seletor.TRANSFORMACAO_EM_MAISCULO)) {
+					if (progressao) {
+						textoASerImplementado = new StringBuilder(
+								texto.substring(0, contagemDoElementoMaiusculo).toUpperCase())
+								.append(texto.substring(contagemDoElementoMaiusculo));
+						statusLabel.setText(textoASerImplementado.toString());
+						contagemDoElementoMaiusculo++;
+					} else {
+						textoASerImplementado = new StringBuilder(
+								texto.substring(0, contagemDoElementoMaiusculo).toUpperCase())
+								.append(texto.substring(contagemDoElementoMaiusculo));
+						statusLabel.setText(textoASerImplementado.toString());
+						contagemDoElementoMaiusculo--;
+					}
+					if (contagemDoElementoMaiusculo == textoASerImplementado.length()) {
+						progressao = false;
+					} else if (contagemDoElementoMaiusculo == 0) {
+						progressao = true;
+					}
+				} else if (seletor.equals(Seletor.TRES_PONTOS)) {						
+					timer.setDelay(500);	
+					if (tresPontosNaString == false) {
+						textoFinal.append("   ");
+						tresPontosNaString = true;
+					}
+					if (textoFinal.toString().endsWith("   ")) {
+						textoFinal = new StringBuilder(textoFinal.toString().replace("   ", ".  "));
+					}
+					else if(textoFinal.toString().endsWith(".  ")){
+						textoFinal = new StringBuilder(textoFinal.toString().replace(".  ", ".. "));
+					}
+					else if(textoFinal.toString().endsWith(".. ")){
+						textoFinal = new StringBuilder(textoFinal.toString().replace(".. ", "..."));
+					}
+					else if(textoFinal.toString().endsWith("...")){
+						textoFinal = new StringBuilder(textoFinal.toString().replace("...", "   "));
+					}
+					statusLabel.setText(textoFinal.toString());
+				}
+				else if (seletor.equals(Seletor.DINAMICO)) {					
+					statusLabel.setText(texto);
+				}
+				else if (seletor.equals(Seletor.ESTATICO)) {					
+					statusLabel.setText(texto);
+				}
+
+			}
+		});
+		timer.start();
 	}
 
-	/*
-	 * SwingUtilities.invokeLater(new Runnable() { public void run() {
-	 * statusLabel.setText(texto); } });
-	 */
+	public enum Seletor {
+		TRANSFORMACAO_EM_MAISCULO, TRES_PONTOS, ESTATICO, DINAMICO
+	}
 }

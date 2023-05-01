@@ -23,6 +23,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
 import br.com.jayybe.controller.WebDriverUtil;
+import br.com.jayybe.view.TelaPrincipal4.Seletor;
 
 public class HTMLUtils {
 
@@ -30,7 +31,7 @@ public class HTMLUtils {
 	public static String[] encontrarElementosComIdJqg(String codigoHtml) {
 		Document doc = Jsoup.parse(codigoHtml);
 		
-		TelaPrincipal4.atualizarStatusLabel("Procurando Elementos de Jogo");
+		TelaPrincipal4.atualizarStatusLabel("Procurando Elementos de Jogo", TelaPrincipal4.Seletor.TRANSFORMACAO_EM_MAISCULO);
 		
 		Pattern pattern = Pattern.compile("jqg\\d+$"); // Expressão regular para IDs que começam com 'jqg' e terminam
 														// com um ou mais dígitos

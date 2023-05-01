@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry excluding="libs/" kind="src" path="src"/>
 	<classpathentry kind="src" path="src/libs"/>
-	<classpathentry kind="src" path="img"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17">
 		<attributes>
 			<attribute name="module" value="true"/>
@@ -513,7 +512,7 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/GitHub Projects/1904/OnlinePlayersRating/libs/jsoup-1.15.4.jar">
+	<classpathentry kind="lib" path="libs/jsoup-1.15.4.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>

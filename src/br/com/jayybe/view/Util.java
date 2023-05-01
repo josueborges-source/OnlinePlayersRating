@@ -13,6 +13,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import br.com.jayybe.model.DadosTorneioERede;
+import br.com.jayybe.view.TelaPrincipal4.Seletor;
 
 
 public class Util {
@@ -77,7 +78,7 @@ public class Util {
 		String urlDaPagina = "https://pt.sharkscope.com/#Find-Tournament//networks/" + torneio
 				+ "/tournaments/" + rede;
 		
-		TelaPrincipal4.atualizarStatusLabel("Retornando URL Da Página: " + urlDaPagina);
+		TelaPrincipal4.atualizarStatusLabel("Retornando URL Da Página: " + urlDaPagina, Seletor.ESTATICO);
 
 		return urlDaPagina;
 	}
