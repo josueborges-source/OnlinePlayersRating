@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.awt.event.ActionEvent;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Image;
 
 import javax.swing.SwingConstants;
@@ -53,16 +54,28 @@ public class TelaPrincipal4 {
 	private static JLabel statusLabel = new JLabel("Aguardando Comandos");
 	private JButton exportarDadosButton = new JButton("Exportar Dados XLS");
 	private Border border;
-	
+
 	static public Timer timer;
 	static StringBuilder textoFinal;
 	static private JLabel carregandoLabel = new JLabel();
-	
 
 	/**
-	 * Launch the application.
+	 * Inicia a Aplicação
 	 */
 	public static void main(String[] args) {
+		
+		try {
+		    for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+		        if ("Nimbus".equals(info.getName())) {
+		            javax.swing.UIManager.setLookAndFeel(info.getClassName());
+		            break;
+		        }
+		    }
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
+		    java.util.logging.Logger.getLogger(TelaPrincipal4.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+		}
+		
+		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -76,7 +89,7 @@ public class TelaPrincipal4 {
 	}
 
 	/**
-	 * Create the application.
+	 * Cria a Aplicação
 	 */
 	public TelaPrincipal4() {
 		initialize();
@@ -86,87 +99,53 @@ public class TelaPrincipal4 {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		
-		frame = new JFrame();
-		frame.setBounds(100, 100, 1056, 532);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().setLayout(null);	
 
+		frame = new JFrame();
+
+		JPanel painel = new JPanel() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected void paintComponent(Graphics g) {
+				super.paintComponent(g);
+				Image imagem = new ImageIcon(getClass().getResource("/resource/blackgrunge.jpg")).getImage();
+				g.drawImage(imagem, 0, 0, getWidth(), getHeight(), this);
+			}
+		};
+		painel.setForeground(new Color(0, 0, 0));
+		frame.setContentPane(painel);
+
+		frame.getContentPane().setBackground(Color.BLACK);
+		frame.setBounds(0, 0, 836, 524);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
 
 		botaoImportarXLS = new JButton("Importar XLS");
+		botaoImportarXLS.setBackground(Color.BLACK);
+		botaoImportarXLS.setForeground(Color.WHITE);
 
 		/// Importar Dados Botão
 		importarDadosWebButton = new JButton("Importar Dados Web");
+		importarDadosWebButton.setBackground(Color.BLACK);
+		importarDadosWebButton.setForeground(Color.WHITE);
+		
 		importarDadosWebButton.setEnabled(false);
 
-		importarDadosWebButton.setBounds(50, 348, 215, 30);
-		frame.getContentPane().add(importarDadosWebButton);
-		TelaPrincipal4.atualizarStatusLabel("Aguardando Comandos", Seletor.TRES_PONTOS);
-
-		botaoImportarXLS.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-
-				TelaPrincipal4.atualizarStatusLabel("Aguardando Comandos", Seletor.TRES_PONTOS);
-
-				importarDadosWebButton.setEnabled(false);
-				botaoImportarXLS.setEnabled(false);
-				exportarDadosButton.setEnabled(false);
-
-				// 1: Retorna Caminho do Arquivo via Janela
-				File arquivoExcel = SeletorDeArquivos.mostrarSeletorDeArquivo();
-
-				// Se caminho do arquivo foi localizado
-				if (arquivoExcel != null) {
-
-					String nomeCaminhoDoArquivo = arquivoExcel.toString();
-					// Teste 1 (Caminho do Arquivo via Janela)
-					System.out.println("Nome do Caminho do Arquivo: " + nomeCaminhoDoArquivo);
-
-					// 2: Atribui nome do arquivo para o textfield
-					arquivoCaminhoField.setText(nomeCaminhoDoArquivo);
-
-					// Teste 2 (Atribui nome do arquivo para o textfield)
-					System.out.println("Valor do texto do textfield: " + arquivoCaminhoField.getText());
-
-					// 3: Ler campos de torneio e rede do arquivo excel
-					LeitorExcel.setArquivo(arquivoExcel);
-					System.out.println(arquivoExcel.getName());
-
-					// System.out.println("LeitorArquivoExcel: " +
-					// LeitorExcel.getArquivo().getName());
-					List<String[]> listaDeTorneiosERedes = LeitorExcel.lerTorneiosERedesExcel();
-
-					if (listaDeTorneiosERedes != null) {
-
-						// Teste 3 (Ler campos de torneio e rede do arquivo excel)
-						for (String[] listaTorneioERede : listaDeTorneiosERedes) {
-							System.out.println(listaTorneioERede[0]);
-							System.out.println(listaTorneioERede[1]);
-						}
-						// 4: Seta valores campo de torneio e rede na tabela
-						atualizaTableModelRedeETorneio(listaDeTorneiosERedes);
-
-					}
-				}
-
-				importarDadosWebButton.setEnabled(true);
-				botaoImportarXLS.setEnabled(true);
-				exportarDadosButton.setEnabled(false);
-
-				TelaPrincipal4.atualizarStatusLabel("Aguardando Comandos", Seletor.TRES_PONTOS);
-
-			}
-		});
-
+		importarDadosWebButton.setBounds(50, 348, 215, 24);
+		
 		importarDadosWebButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
-				SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
-					
+
+			SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+
 					@Override
 					protected Void doInBackground() throws Exception {
 
-						TelaPrincipal4.atualizarStatusLabel("Importando Dados do Arquivo", Seletor.TRANSFORMACAO_EM_MAISCULO);
+						TelaPrincipal4.atualizarStatusLabel("Importando Dados do Arquivo",
+								Seletor.TRANSFORMACAO_EM_MAISCULO);
 
 						List<String[]> valoresDaLinha = new ArrayList<String[]>();
 
@@ -226,12 +205,10 @@ public class TelaPrincipal4 {
 							linhaPremioERecompensa[3] = df.format(recompensaTotal).toString();
 
 							valoresDaLinha.add(linhaPremioERecompensa);
-
-							importarDadosWebButton.setEnabled(true);
-							botaoImportarXLS.setEnabled(true);
-							exportarDadosButton.setEnabled(true);
-
 						}
+						importarDadosWebButton.setEnabled(true);
+						botaoImportarXLS.setEnabled(true);
+						exportarDadosButton.setEnabled(true);
 
 						TelaPrincipal4.atualizarStatusLabel("Aguardando Comandos", Seletor.TRES_PONTOS);
 						System.out.println(LeitorExcel.getArquivo());
@@ -248,12 +225,73 @@ public class TelaPrincipal4 {
 				worker.execute();
 			}
 		});
-		exportarDadosButton.setEnabled(false);
-
-		exportarDadosButton.addActionListener(new ActionListener() {
-			
-			public void actionPerformed(ActionEvent e) {				
+		
+		importarDadosWebButton.setBackground(Color.BLACK);		
 				
+		botaoImportarXLS.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				acaoDoInicioDoBotaoImportar();
+				
+				TelaPrincipal4.atualizarStatusLabel("Aguardando Comandos", Seletor.TRES_PONTOS);
+				
+				
+				// 1: Retorna Caminho do Arquivo via Janela
+				File arquivoExcel = SeletorDeArquivos.mostrarSeletorDeArquivo();
+				
+				// Se caminho do arquivo foi localizado
+				if (arquivoExcel != null) {
+					
+					String nomeCaminhoDoArquivo = arquivoExcel.toString();
+					// Teste 1 (Caminho do Arquivo via Janela)
+					System.out.println("Nome do Caminho do Arquivo: " + nomeCaminhoDoArquivo);
+					
+					// 2: Atribui nome do arquivo para o textfield
+					arquivoCaminhoField.setText(nomeCaminhoDoArquivo);
+					
+					// Teste 2 (Atribui nome do arquivo para o textfield)
+					System.out.println("Valor do texto do textfield: " + arquivoCaminhoField.getText());
+					
+					// 3: Ler campos de torneio e rede do arquivo excel
+					LeitorExcel.setArquivo(arquivoExcel);
+					System.out.println(arquivoExcel.getName());
+					
+					// System.out.println("LeitorArquivoExcel: " + LeitorExcel.getArquivo().getName());
+					List<String[]> listaDeTorneiosERedes = LeitorExcel.lerTorneiosERedesExcel();
+					
+					if (listaDeTorneiosERedes != null) {
+						
+						// Teste 3 (Ler campos de torneio e rede do arquivo excel)
+						for (String[] listaTorneioERede : listaDeTorneiosERedes) {
+							System.out.println(listaTorneioERede[0]);
+							System.out.println(listaTorneioERede[1]);
+						}
+						// 4: Seta valores campo de torneio e rede na tabela
+						atualizaTableModelRedeETorneio(listaDeTorneiosERedes);
+					}
+				}
+				
+				acaoAposImportarBotoes();				
+				
+				TelaPrincipal4.atualizarStatusLabel("Aguardando Comandos", Seletor.TRES_PONTOS);
+				
+			}			
+		});
+		
+		botaoImportarXLS.setBounds(480, 72, 140, 24);
+		
+		frame.getContentPane().add(importarDadosWebButton);
+		TelaPrincipal4.atualizarStatusLabel("Aguardando Comandos", Seletor.TRES_PONTOS);
+		
+
+		exportarDadosButton.setEnabled(false);
+		exportarDadosButton.setBackground(Color.BLACK);
+		exportarDadosButton.setForeground(Color.WHITE);
+		
+		exportarDadosButton.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+
 				int numLinhasTabelaImportacaoXLS = tabelaRedeTorneioPremioRecompensa.getRowCount();
 				int numColunasTabelaImportacaoXLS = tabelaRedeTorneioPremioRecompensa.getColumnCount();
 
@@ -279,28 +317,32 @@ public class TelaPrincipal4 {
 						}
 					}
 				}
-				File caminhoArquivo = new File(arquivoCaminhoField.getText());
 				System.out.println(LeitorExcel.getArquivo().getName());
 			}
 		});
 
-		exportarDadosButton.setBounds(300, 348, 320, 30);
-		frame.getContentPane().add(exportarDadosButton);
-
-		botaoImportarXLS.setBounds(479, 63, 141, 40);
+		exportarDadosButton.setBackground(Color.BLACK);
+		
+		exportarDadosButton.setBounds(300, 348, 320, 24);
+		
+		frame.getContentPane().add(exportarDadosButton);		
 		frame.getContentPane().add(botaoImportarXLS);
 
 		arquivoCaminhoField = new JTextField();
+		arquivoCaminhoField.setForeground(Color.WHITE);		
+		arquivoCaminhoField.setBackground(Color.BLACK);
 		arquivoCaminhoField.setBounds(50, 71, 391, 24);
 		frame.getContentPane().add(arquivoCaminhoField);
 		arquivoCaminhoField.setColumns(10);
 
 		lblNewLabel = new JLabel("Arquivo:");
+		lblNewLabel.setForeground(Color.WHITE);
 		lblNewLabel.setBounds(50, 45, 50, 15);
 		frame.getContentPane().add(lblNewLabel);
 
 		/// Dados XLS Label
 		labelDadosXLS = new JLabel("Dados do XLS:");
+		labelDadosXLS.setForeground(Color.WHITE);
 		labelDadosXLS.setBounds(50, 120, 85, 15);
 		frame.getContentPane().add(labelDadosXLS);
 
@@ -327,44 +369,43 @@ public class TelaPrincipal4 {
 		scrollPane2 = new JScrollPane(tabelaRedeTorneioPremioRecompensa);
 		scrollPane2.setEnabled(false);
 		panelTabelaDadosRetornoPagina.add(scrollPane2, BorderLayout.CENTER);
+		tituloStatusLabel.setForeground(new Color(255, 255, 255));
 
 		tituloStatusLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
 		tituloStatusLabel.setBounds(300, 120, 46, 14);
 		frame.getContentPane().add(tituloStatusLabel);
+		statusLabel.setForeground(new Color(255, 255, 255));
 		statusLabel.setHorizontalAlignment(SwingConstants.TRAILING);
 		statusLabel.setFont(new Font("Tahoma", Font.PLAIN, 11));
 
 		statusLabel.setBounds(345, 120, 275, 14);
 		frame.getContentPane().add(statusLabel);
-		ImageIcon imageIcon = new ImageIcon(TelaPrincipal4.class.getResource("/resource/loading.gif"));		
-		Image image = imageIcon.getImage();		
-		Image novaImagem = image.getScaledInstance(50, 50, Image.SCALE_SMOOTH);		
+		ImageIcon imageIcon = new ImageIcon(TelaPrincipal4.class.getResource("/resource/loading.gif"));
+		Image image = imageIcon.getImage();
+		Image novaImagem = image.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
 		ImageIcon novoIcone = new ImageIcon(novaImagem);
-				
+
 		imageIcon.setImage(novaImagem);
-		
+
 		border = BorderFactory.createLineBorder(Color.BLACK, 2);
-		
+
 		cardsLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		cardsLabel.setIcon(new ImageIcon(TelaPrincipal4.class.getResource("/resource/giphy.gif")));
-		cardsLabel.setBounds(685, 162, 120, 120);
-		
+		cardsLabel.setBounds(660, 190, 120, 120);
+
 		cardsLabel.setBorder(border);
-		
+
 		frame.getContentPane().add(cardsLabel);
-		
+
 		carregandoLabel = new JLabel("");
-		
-		
+
 		carregandoLabel.setOpaque(false);
 		carregandoLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		carregandoLabel.setIcon(new ImageIcon(TelaPrincipal4.class.getResource("/resource/loading.gif")));
-		carregandoLabel.setBounds(685, 162, 120, 120);
-		
+		carregandoLabel.setBounds(660, 190, 120, 120);
+
 		carregandoLabel.setBorder(border);
-		
-		
-		carregandoLabel.setBorder(border);
+
 		frame.getContentPane().add(carregandoLabel);
 	}
 
@@ -383,29 +424,31 @@ public class TelaPrincipal4 {
 		}
 	}
 
-	public void aguardeSegundos(Integer segundos) {
-		
+	private void aguardeSegundos(Integer segundos) {
+
 		try {
 			Thread.sleep(segundos * 1000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
-
 	
+	private void acaoDoInicioDoBotaoImportar() {
+		importarDadosWebButton.setEnabled(false);
+		botaoImportarXLS.setEnabled(false);
+		exportarDadosButton.setEnabled(false);				
+	}
 
 	public static void atualizarStatusLabel(String texto, Seletor seletor) {
-		
-		if(texto.contains("Aguardando")) {
-			cardsLabel.setEnabled(false);
-			carregandoLabel.setEnabled(true);
-			
+
+		if (texto.contains("Aguardando")) {
+			cardsLabel.setVisible(false);
+			carregandoLabel.setVisible(true);
+		} else {
+			cardsLabel.setVisible(true);
+			carregandoLabel.setVisible(false);
 		}
-		else {
-			cardsLabel.setEnabled(true);
-			carregandoLabel.setEnabled(false);		}
-		
-		
+
 		if (timer != null) {
 			timer.stop();
 		}
@@ -416,11 +459,11 @@ public class TelaPrincipal4 {
 			int contagemDoElementoMaiusculo = 0;
 			boolean progressao = true;
 			boolean tresPontosNaString = false;
-			
+
 			StringBuilder textoFinal = new StringBuilder(texto);
 
-			public void actionPerformed(ActionEvent e) {					
-				
+			public void actionPerformed(ActionEvent e) {
+
 				if (seletor.equals(Seletor.TRANSFORMACAO_EM_MAISCULO)) {
 					if (progressao) {
 						textoASerImplementado = new StringBuilder(
@@ -440,36 +483,37 @@ public class TelaPrincipal4 {
 					} else if (contagemDoElementoMaiusculo == 0) {
 						progressao = true;
 					}
-				} else if (seletor.equals(Seletor.TRES_PONTOS)) {						
-					timer.setDelay(500);	
+				} else if (seletor.equals(Seletor.TRES_PONTOS)) {
+					timer.setDelay(500);
 					if (tresPontosNaString == false) {
 						textoFinal.append("   ");
 						tresPontosNaString = true;
 					}
 					if (textoFinal.toString().endsWith("   ")) {
 						textoFinal = new StringBuilder(textoFinal.toString().replace("   ", ".  "));
-					}
-					else if(textoFinal.toString().endsWith(".  ")){
+					} else if (textoFinal.toString().endsWith(".  ")) {
 						textoFinal = new StringBuilder(textoFinal.toString().replace(".  ", ".. "));
-					}
-					else if(textoFinal.toString().endsWith(".. ")){
+					} else if (textoFinal.toString().endsWith(".. ")) {
 						textoFinal = new StringBuilder(textoFinal.toString().replace(".. ", "..."));
-					}
-					else if(textoFinal.toString().endsWith("...")){
+					} else if (textoFinal.toString().endsWith("...")) {
 						textoFinal = new StringBuilder(textoFinal.toString().replace("...", "   "));
 					}
 					statusLabel.setText(textoFinal.toString());
-				}
-				else if (seletor.equals(Seletor.DINAMICO)) {					
+				} else if (seletor.equals(Seletor.DINAMICO)) {
 					statusLabel.setText(texto);
-				}
-				else if (seletor.equals(Seletor.ESTATICO)) {					
+				} else if (seletor.equals(Seletor.ESTATICO)) {
 					statusLabel.setText(texto);
 				}
 
 			}
 		});
 		timer.start();
+	}
+	
+	private void acaoAposImportarBotoes() {
+		importarDadosWebButton.setEnabled(true);
+		botaoImportarXLS.setEnabled(true);
+		exportarDadosButton.setEnabled(false);				
 	}
 
 	public enum Seletor {

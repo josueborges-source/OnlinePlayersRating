@@ -30,7 +30,6 @@ import br.com.jayybe.view.TelaPrincipal4.Seletor;
 
 public class LeitorExcel {
 
-	private int zero;
 	private static XSSFWorkbook workbook;
 	private static File arquivo = null;
 	private static int linhaAtual = 1;
@@ -48,7 +47,7 @@ public class LeitorExcel {
 	}
 
 	public static void setArquivo(File arquivo) {
-		
+		LeitorExcel.arquivo = arquivo;
 	        try {
 	            LeitorExcel.workbook = new XSSFWorkbook(arquivo);
 	        } catch (InvalidFormatException | IOException e) {
@@ -131,6 +130,7 @@ public class LeitorExcel {
 		}
 	}
 
+	@SuppressWarnings("resource")
 	public static void inserirValorNaColuna3(String valor, int linha) {
 		try {
 			FileInputStream file;

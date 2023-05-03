@@ -19,13 +19,13 @@ public class WebDriverUtil {
 	public String getHtml(String url) {
 		System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
 
-		TelaPrincipal4.atualizarStatusLabel("Abrindo página", Seletor.DINAMICO);
+		TelaPrincipal4.atualizarStatusLabel("Abrindo página", Seletor.TRES_PONTOS);
 		
 		WebDriver driver;
 		driver = new ChromeDriver();
 		driver.get(url);
          
-		TelaPrincipal4.atualizarStatusLabel("Abrindo página - Aguardando 20 segundos para carregamento completo", Seletor.DINAMICO);		
+		TelaPrincipal4.atualizarStatusLabel("Abrindo página - Esperando 20 segundos para carregamento completo", Seletor.DINAMICO);		
 		aguardarSegundos(20);
 
 		List<WebElement> elementosHTML = retornaElementosDeSelecaoDoHTML(driver);

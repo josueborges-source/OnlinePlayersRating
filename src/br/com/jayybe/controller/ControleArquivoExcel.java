@@ -1,6 +1,7 @@
 package br.com.jayybe.controller;
 
 
+import java.awt.Toolkit;
 import java.io.*;
 
 import java.util.*;
@@ -9,6 +10,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 
 import br.com.jayybe.model.*;
 import br.com.jayybe.util.*;
@@ -85,10 +87,27 @@ public class ControleArquivoExcel {
 		//Insere Página Selecionada em TextArea
 		Log.acaoParaLog("Página Selecionada a partir da lista: " + url);
 		Log.acaoParaLog(url);		
-		Log.acaoParaLog("Abrindo Browser na URL: " + url);
-						
+		Log.acaoParaLog("Abrindo Browser na URL: " + url);						
+		
+		// Obter o tamanho da tela do dispositivo
+		java.awt.Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
+		// Definir a largura e altura da janela do Chrome
+		int chromeWidth = screenSize.width - 200; // 200 é a largura da sua janela principal
+		int chromeHeight = screenSize.height - 100; // 100 é a altura da sua janela principal
+		Dimension chromeDimension = new Dimension(chromeWidth, chromeHeight);
+
+		// Definir a posição da janela do Chrome
+		Point chromeLocation = new Point(300, 0); // 300 é a posição x da sua janela principal
+
+		// Configurar as opções do Chrome para definir o tamanho da janela
+		ChromeOptions chromeOptions = new ChromeOptions();
+		chromeOptions.addArguments("--window-size=" + chromeWidth + "," + chromeHeight);
+		chromeOptions.addArguments("--window-position=" + chromeLocation.x + "," + chromeLocation.y);
+
+		
 		// Instancia o driver do Chrome
-		WebDriver driver = new ChromeDriver();
+		WebDriver driver = new ChromeDriver();		
 
 		// Navega para o site do Google
 		driver.get(url);
@@ -118,6 +137,9 @@ public class ControleArquivoExcel {
 		List<WebElement> linhasTabela = controleSeleniumDriver.retornaElementosIdJqg();
 		
 		controleSeleniumDriver.imprimaValoresDasLinhasDaTabela(linhasTabela);	
+		
+		driver.quit();
+		return dadoTorneioERede;
 		
 		///Refatorado		
 		/*
@@ -216,8 +238,7 @@ public class ControleArquivoExcel {
 			}		
 			*/	
 
-		driver.quit();
-		return dadoTorneioERede;
+		
 	}
 	
 	public ArrayList<DadosTorneioERede> instanciarTorneioERedeAPartirDeArquivoExcelLocal(File arquivo) {

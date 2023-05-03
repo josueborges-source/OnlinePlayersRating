@@ -15,4 +15,5 @@ module Sharkscope {
 	requires selenium.chrome.driver;
 	requires selenium.support;
 	requires org.jsoup;
+	requires java.logging;
 }
