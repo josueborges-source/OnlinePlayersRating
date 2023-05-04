@@ -2,6 +2,7 @@ package br.com.jayybe.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -18,6 +19,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -37,7 +40,9 @@ import javax.swing.ImageIcon;
 public class TelaPrincipal4 {
 
 	public static JLabel cardsLabel = new JLabel("");
-	private JFrame frame;
+	private static JFrame frame;
+	
+
 	private JTextField arquivoCaminhoField;
 	private JTable tabelaRedeETorneio;
 	private DefaultTableModel tableModel;
@@ -54,6 +59,15 @@ public class TelaPrincipal4 {
 	private static JLabel statusLabel = new JLabel("Aguardando Comandos");
 	private JButton exportarDadosButton = new JButton("Exportar Dados XLS");
 	private Border border;
+	private static JPanel painel;
+
+	public static JPanel getPainel() {
+		return painel;
+	}
+
+	public void setPainel(JPanel painel) {
+		this.painel = painel;
+	}
 
 	static public Timer timer;
 	static StringBuilder textoFinal;
@@ -98,11 +112,13 @@ public class TelaPrincipal4 {
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
+	private void initialize() {		
 
 		frame = new JFrame();
-
-		JPanel painel = new JPanel() {
+		
+		
+		
+		painel = new JPanel() {
 			/**
 			 * 
 			 */
@@ -510,12 +526,20 @@ public class TelaPrincipal4 {
 		timer.start();
 	}
 	
+	public static JFrame getFrame() {
+		return frame;
+	}
+
+	public static void setFrame(JFrame frame) {
+		TelaPrincipal4.frame = frame;
+	}	
+	
 	private void acaoAposImportarBotoes() {
 		importarDadosWebButton.setEnabled(true);
 		botaoImportarXLS.setEnabled(true);
 		exportarDadosButton.setEnabled(false);				
-	}
-
+	}	
+	
 	public enum Seletor {
 		TRANSFORMACAO_EM_MAISCULO, TRES_PONTOS, ESTATICO, DINAMICO
 	}

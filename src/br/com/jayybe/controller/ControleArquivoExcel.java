@@ -10,7 +10,6 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 
 import br.com.jayybe.model.*;
 import br.com.jayybe.util.*;
@@ -32,7 +31,8 @@ public class ControleArquivoExcel {
 	public void retornarArquivoExcelParaModeloTorneio()
 	{
 		System.out.println("Botão pressionado");
-		arquivoExcelTorneios = new JanelaDeSelecaoDeArquivoLocal().retornarArquivoExcelComTabelaDados();
+		new JanelaDeSelecaoDeArquivoLocal();
+		arquivoExcelTorneios = JanelaDeSelecaoDeArquivoLocal.retornarArquivoExcelComTabelaDados();
 		
 		dadosTorneioERede = transformarArquivoXLSEmObjetosDadosETorneio();
 		dadosTorneioERede = inserePremioERecompensaEmDadosTorneioERede(dadosTorneioERede);
@@ -76,8 +76,7 @@ public class ControleArquivoExcel {
 	}
 
 	private DadosTorneioERede InserirDadosDePremioERecompensaEmObjetoDadosTorneioERede(
-			DadosTorneioERede dadoTorneioERede) {
-		
+			DadosTorneioERede dadoTorneioERede) {		
 		//Configura Chrome Driver
 		System.setProperty("webdriver.chrome.driver", "chromedriver.exe");		
 		
@@ -88,26 +87,22 @@ public class ControleArquivoExcel {
 		Log.acaoParaLog("Página Selecionada a partir da lista: " + url);
 		Log.acaoParaLog(url);		
 		Log.acaoParaLog("Abrindo Browser na URL: " + url);						
-		
-		// Obter o tamanho da tela do dispositivo
-		java.awt.Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-
-		// Definir a largura e altura da janela do Chrome
-		int chromeWidth = screenSize.width - 200; // 200 é a largura da sua janela principal
-		int chromeHeight = screenSize.height - 100; // 100 é a altura da sua janela principal
-		Dimension chromeDimension = new Dimension(chromeWidth, chromeHeight);
-
-		// Definir a posição da janela do Chrome
-		Point chromeLocation = new Point(300, 0); // 300 é a posição x da sua janela principal
-
-		// Configurar as opções do Chrome para definir o tamanho da janela
-		ChromeOptions chromeOptions = new ChromeOptions();
-		chromeOptions.addArguments("--window-size=" + chromeWidth + "," + chromeHeight);
-		chromeOptions.addArguments("--window-position=" + chromeLocation.x + "," + chromeLocation.y);
-
-		
+				
 		// Instancia o driver do Chrome
-		WebDriver driver = new ChromeDriver();		
+		WebDriver driver = new ChromeDriver();	
+		
+		// Obtém o tamanho da tela
+		java.awt.Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		int width = (int) screenSize.getWidth();
+		int height = (int) screenSize.getHeight();
+
+		// Define as dimensões da janela
+		Dimension tamanho = new Dimension(800, 600);
+		// Define a posição da janela na tela
+		Point posicao = new Point(width/2 - tamanho.width/2, height/2 - tamanho.height/2);
+		// Redimensiona e reposiciona a janela
+		driver.manage().window().setSize(tamanho);
+		driver.manage().window().setPosition(posicao);
 
 		// Navega para o site do Google
 		driver.get(url);
@@ -117,9 +112,7 @@ public class ControleArquivoExcel {
 		Log.acaoParaLog(mensagemDeAguardo);
 			
 		aguardeSegundos(Configuracoes.tempoDeCarregamentoDaPagina);	
-
-		TelaPrincipal.frame.revalidate();
-		TelaPrincipal.frame.repaint();
+		
 
 		ControleSeleniumDriver controleSeleniumDriver = new ControleSeleniumDriver(driver);		
 		
@@ -136,7 +129,10 @@ public class ControleArquivoExcel {
 		//// ID
 		List<WebElement> linhasTabela = controleSeleniumDriver.retornaElementosIdJqg();
 		
-		controleSeleniumDriver.imprimaValoresDasLinhasDaTabela(linhasTabela);	
+		controleSeleniumDriver.imprimaValoresDasLinhasDaTabela(linhasTabela);
+		
+		TelaPrincipal.frame.revalidate();
+		TelaPrincipal.frame.repaint();
 		
 		driver.quit();
 		return dadoTorneioERede;
@@ -236,9 +232,7 @@ public class ControleArquivoExcel {
 
 			dadoTorneioERede.adicionaEntradaPremioRecompensa(entradaPremioRecompensa);
 			}		
-			*/	
-
-		
+			*/			
 	}
 	
 	public ArrayList<DadosTorneioERede> instanciarTorneioERedeAPartirDeArquivoExcelLocal(File arquivo) {

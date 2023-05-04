@@ -41,7 +41,7 @@ public class ControleSeleniumDriver {
 		((JavascriptExecutor) driver).executeScript("var options = arguments[0].getElementsByTagName('option');"
 				+ "options[options.length - 1].selected = true;" + "arguments[0].dispatchEvent(new Event('change'));",
 				selectElement);		
-	}
+	}	
 	
 	public List<WebElement> retornaElementosIdJqg() {
 		List<WebElement> linhasTabela = driver.findElements(By.cssSelector("[id^='jqg']"));

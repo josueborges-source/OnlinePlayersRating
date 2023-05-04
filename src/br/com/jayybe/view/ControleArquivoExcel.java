@@ -113,10 +113,10 @@ public class ControleArquivoExcel {
 
 	private WebDriver configuraPaginaDeElementosPremioERecompensaDaPagina(String urlDaListaDeDadosDoTorneio) {
 		
-		// Configura o caminho do driver do Chrome
+				// Configura o caminho do driver do Chrome
 				System.setProperty("webdriver.chrome.driver", "chromedriver.exe");		
 				
-		// Instancia o driver do Chrome
+				// Instancia o driver do Chrome
 				WebDriver driverChromePagina = new ChromeDriver();	
 
 				// Navega para o site da url do torneio
