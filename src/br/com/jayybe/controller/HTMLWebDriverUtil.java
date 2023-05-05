@@ -10,23 +10,90 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
-import br.com.jayybe.view.TelaPrincipal4;
-import br.com.jayybe.view.TelaPrincipal4.Seletor;
+import br.com.jayybe.view.TelaPrincipal;
+import br.com.jayybe.view.TelaPrincipal.Seletor;
 
-public class WebDriverUtil {
+public class HTMLWebDriverUtil {
 
+	public static String[] encontrarElementosComIdJqg(String codigoHtml) {
+		Document doc = Jsoup.parse(codigoHtml);
+		
+		TelaPrincipal.atualizarStatusLabel("Procurando Elementos de Jogo", TelaPrincipal.Seletor.TRANSFORMACAO_EM_MAISCULO);
+		
+		Pattern pattern = Pattern.compile("jqg\\d+$"); // Expressão regular para IDs que começam com 'jqg' e terminam
+														// com um ou mais dígitos
+		List<String> valores = new ArrayList<>();
+		for (Element element : doc.select("[id]")) { // Seleciona todos os elementos que possuem um atributo ID
+			String id = element.id();
+			if (pattern.matcher(id).matches()) { // Verifica se o ID do elemento corresponde à expressão regular
+				valores.add(element.text());
+			}
+		}
+		return valores.toArray(new String[0]);
+	}	
+
+	public static String[][] retornaValorPremioRecompensa(String[] valoresDaTabelaElements) {
+
+		String[][] valorPremioRecompensa = new String[valoresDaTabelaElements.length][];
+
+		for (int i = 0; i < valoresDaTabelaElements.length; i++) {
+			String[] valorStringArray = extrairInformacao(valoresDaTabelaElements[i]);
+			valorPremioRecompensa[i] = valorStringArray;		
+		}
+		return valorPremioRecompensa;
+	}
+	
+	public static String[] extrairInformacao(String inputString) {
+
+		String[] informacaoExtraida = new String[3];
+
+		Pattern namePattern = Pattern.compile("^\\d+\\s+(.+?)\\s+USD.*");
+		Matcher nameMatcher = namePattern.matcher(inputString);
+
+		if (nameMatcher.matches()) {
+			informacaoExtraida[0] = nameMatcher.group(1);
+		} else {
+			informacaoExtraida[0] = "";
+		}
+
+		Pattern valuePattern = Pattern.compile(".*PokerStars\\s*\\$([\\d,]+(?:\\.\\d{1,2})?)");
+		Matcher valueMatcher = valuePattern.matcher(inputString);
+
+		if (valueMatcher.find()) {
+			informacaoExtraida[1] = valueMatcher.group(1);
+		} else {
+			informacaoExtraida[1] = "";
+		}
+
+		Pattern rewardPattern = Pattern.compile("Recompensas:\\s*\\$([\\d,\\.]+)");
+		Matcher rewardMatcher = rewardPattern.matcher(inputString);
+
+		if (rewardMatcher.find()) {
+			informacaoExtraida[2] = rewardMatcher.group(1);
+		} else {
+			informacaoExtraida[2] = "";
+		}		
+
+		return informacaoExtraida;
+	}
+	
+		
+	
+	
 	public String getHtml(String url) {
 		System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
 
-		TelaPrincipal4.atualizarStatusLabel("Abrindo página", Seletor.TRES_PONTOS);		
+		TelaPrincipal.atualizarStatusLabel("Abrindo página", Seletor.TRES_PONTOS);		
 		
 		
 		WebDriver driver;
-		driver = new ChromeDriver();
-					
+		driver = new ChromeDriver();				
 		
 		
 		// Obtém a largura e altura do monitor
@@ -37,8 +104,6 @@ public class WebDriverUtil {
 		// Obtém a largura e altura da janela
 		Dimension windowSize = driver.manage().window().getSize();
 		int windowWidth = windowSize.width;
-		int windowHeight = windowSize.height;
-
 		// Define a largura e altura da janela
 		int novaLargura = larguraDaTela - windowWidth;
 		int novaAltura = alturaDaTela;
@@ -53,9 +118,9 @@ public class WebDriverUtil {
 		
 		driver.get(url);
 		
-		TelaPrincipal4.getFrame().setAlwaysOnTop(true);
+		TelaPrincipal.getFrame().setAlwaysOnTop(true);
          
-		TelaPrincipal4.atualizarStatusLabel("Abrindo página - Esperando 20 segundos para carregamento completo", Seletor.DINAMICO);		
+		TelaPrincipal.atualizarStatusLabel("Abrindo página - Esperando 20 segundos para carregamento completo", Seletor.DINAMICO);		
 		removerElementosDesnecessarios(driver);
 		
 		aguardarSegundos(20);
@@ -64,7 +129,7 @@ public class WebDriverUtil {
 		alteraValorDoUltimoSelectDaPaginaPara20000(driver, elementosHTML.get(2));
 		clicaNaUltimaOpcaoDeElementoSelect(driver, elementosHTML.get(2));
 
-		TelaPrincipal4.atualizarStatusLabel("Abrindo página - Expandindo Prêmios e Recompensas ao limite", Seletor.DINAMICO);		
+		TelaPrincipal.atualizarStatusLabel("Abrindo página - Expandindo Prêmios e Recompensas ao limite", Seletor.DINAMICO);		
 		aguardarSegundos(20);
 		
 		
@@ -138,50 +203,7 @@ public class WebDriverUtil {
 
 		return dadosDaPaginaAPartirDeIndiceDeAmostra;
 	}
-
-	public static String[] extrairInformacao(String inputString) {
-
-		/*
-		 * int numeroDaEntrada = Integer.parseInt(inputString.substring(0,
-		 * inputString.indexOf(" ")).replace(",", ""));
-		 * 
-		 * if (numeroDaEntrada % 60 == 0) { System.out.println(inputString); }
-		 */
-
-		// System.out.println(numeroDaEntrada);
-
-		String[] informacaoExtraida = new String[3];
-
-		Pattern namePattern = Pattern.compile("^\\d+\\s+([a-zA-Z0-9_]+).*");
-		Matcher nameMatcher = namePattern.matcher(inputString);
-
-		if (nameMatcher.matches()) {
-			informacaoExtraida[0] = nameMatcher.group(1);
-		} else {
-			informacaoExtraida[0] = "";
-		}
-
-		Pattern valuePattern = Pattern.compile(".*PokerStars\\s*\\$(\\d+(?:\\.\\d{1,2})?)");
-		Matcher valueMatcher = valuePattern.matcher(inputString);
-
-		if (valueMatcher.find()) {
-			informacaoExtraida[1] = valueMatcher.group(1);
-		} else {
-			informacaoExtraida[1] = "";
-		}
-
-		Pattern rewardPattern = Pattern.compile("Recompensas:\\s*\\$([\\d,\\.]+)");
-		Matcher rewardMatcher = rewardPattern.matcher(inputString);
-
-		if (rewardMatcher.find()) {
-			informacaoExtraida[2] = rewardMatcher.group(1);
-		} else {
-			informacaoExtraida[2] = "";
-		}		
-
-		return informacaoExtraida;
-	}
-
+	
 	private void alteraValorDoUltimoSelectDaPaginaPara20000(WebDriver driver, WebElement selectElement) {
 		// Altera o valor do último option para "20000"
 		((JavascriptExecutor) driver).executeScript("var options = arguments[0].getElementsByTagName('option');"

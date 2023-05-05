@@ -12,63 +12,11 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import br.com.jayybe.model.DadosTorneioERede;
-import br.com.jayybe.view.TelaPrincipal4.Seletor;
+import br.com.jayybe.view.TelaPrincipal.Seletor;
 
 
 public class Util {
 	
-	public ArrayList<DadosTorneioERede> instanciaTorneioERedeAPartirDeArquivoExcelLocal(File arquivo){
-		
-		ArrayList<DadosTorneioERede> dados = new ArrayList<>();
-
-	        try (FileInputStream file = new FileInputStream(arquivo)) {
-	            // Abre o arquivo Excel
-	            XSSFWorkbook workbook = new XSSFWorkbook(file);
-
-	            // Seleciona a primeira planilha
-	            Iterator<Row> rowIterator = workbook.getSheetAt(0).iterator();
-
-	            // Itera sobre as linhas da planilha a partir da linha 2
-	            while (rowIterator.hasNext()) {
-	                Row row = rowIterator.next();
-
-	                // Pula a primeira linha (cabeçalho)
-	                if (row.getRowNum() < 1) {
-	                    continue;
-	                }
-
-	                // Verifica se as colunas A e B estão vazias
-	                Cell cellA = row.getCell(0);
-	                Cell cellB = row.getCell(1);
-	                if (cellA == null || cellA.getCellType() == CellType.BLANK
-	                        || cellB == null || cellB.getCellType() == CellType.BLANK) {
-	                    break;
-	                }
-
-	                // Captura os valores das colunas A e B
-	                Long torneio = (long) row.getCell(0).getNumericCellValue();
-	                String rede = row.getCell(1).getStringCellValue();
-
-	                // Cria um objeto DadosTorneioERede e atribui os valores capturados
-	                DadosTorneioERede dadosTorneioERede = new DadosTorneioERede();
-	                dadosTorneioERede.setTorneio(torneio);
-	                dadosTorneioERede.setRede(rede);
-	                
-	                
-	                System.out.println(dadosTorneioERede);
-
-	                // Adiciona o objeto à lista de dados
-	                dados.add(dadosTorneioERede);
-	            }
-
-	            // Fecha o arquivo Excel
-	            workbook.close();
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	        }
-	        return dados;	    
-	}
 	
 	public static String retornarURLAPartirDeArquivoDadosDoTorneio(String[] textosTorneio) {
 		
@@ -78,7 +26,7 @@ public class Util {
 		String urlDaPagina = "https://pt.sharkscope.com/#Find-Tournament//networks/" + torneio
 				+ "/tournaments/" + rede;
 		
-		TelaPrincipal4.atualizarStatusLabel("Retornando URL Da Página: " + urlDaPagina, Seletor.ESTATICO);
+		TelaPrincipal.atualizarStatusLabel("Retornando URL Da Página: " + urlDaPagina, Seletor.ESTATICO);
 
 		return urlDaPagina;
 	}

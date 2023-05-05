@@ -9,7 +9,6 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
-import br.com.jayybe.view.TelaPrincipal;
 
 public class Log {
 	
@@ -61,8 +60,6 @@ public class Log {
 	        }
 	    });
 		
-		TelaPrincipal.frame.revalidate();
-		TelaPrincipal.frame.repaint();
 	}
 	
 	

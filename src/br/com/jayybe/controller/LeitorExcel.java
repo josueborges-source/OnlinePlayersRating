@@ -23,10 +23,8 @@ import org.apache.poi.ss.usermodel.CellType;
 import java.io.IOException;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import br.com.jayybe.model.DadosTorneioERede;
-import br.com.jayybe.model.EntradaPremioRecompensa;
-import br.com.jayybe.view.TelaPrincipal4;
-import br.com.jayybe.view.TelaPrincipal4.Seletor;
+import br.com.jayybe.view.TelaPrincipal;
+import br.com.jayybe.view.TelaPrincipal.Seletor;
 
 public class LeitorExcel {
 
@@ -52,7 +50,7 @@ public class LeitorExcel {
 	            LeitorExcel.workbook = new XSSFWorkbook(arquivo);
 	        } catch (InvalidFormatException | IOException e) {
 	            JOptionPane.showMessageDialog(null, e);
-	            TelaPrincipal4.atualizarStatusLabel("Erro no Arquivo: " + e.getMessage(), Seletor.ESTATICO);
+	            TelaPrincipal.atualizarStatusLabel("Erro no Arquivo: " + e.getMessage(), Seletor.ESTATICO);
 	            e.printStackTrace();
 	        }
 	}
